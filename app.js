@@ -358,10 +358,7 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
 
 // check if a user is logged in
 app.get("/", (req, res) => {
-    const isLoggedIn = !!req.session.user; 
-    const user = req.session.user; // This will contain the logged-in user's data if available
-    console.log("Is user logged in?", isLoggedIn); 
-    res.render("header", { isLoggedIn, user });
+    res.redirect("/main");
 });
 
 
