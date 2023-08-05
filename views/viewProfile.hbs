@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            height: 100dvh;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ACDF87, #1E5631);
+            background-color: #ACDF87;
+        }
+
+        .post {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        /* background-color: #f5f5f5; */
+        border-radius: 10px;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <title>View Profile</title>
+</head>
+<body>
+    <div class="view-profile-container">
+        <div class="view-profile-inner-container">
+            <div class="title">View Profile</div>
+
+            <form action="/main">
+                <div class="view-profile-user-details">
+
+                    <div class="input">
+                        <div id="view-profile-pic">
+                            <img src="{{userInfo.profilePicture}}" alt="profile-pic" id="current-pic">
+                        </div>
+                    </div>
+
+                    <div id="username">
+                        <span class="headerreg">{{userInfo.username}}</span>
+                    </div>
+
+                    <div class="input" id="description-id">
+                        <span class="headerreg">Short Description</span>
+                        <textarea id="description-area" class="description" placeholder="{{userInfo.shortDescription}}" readonly></textarea>
+                    </div>
+
+
+                    <div class="input">
+                        <span class="headerreg">Latest's Review</span>
+                        <div id="view-profile-review">
+                            <div id="posts-container">
+                                {{#each allPost}}
+                                <div class="post">
+                                    <div class="post-detail">
+                                        <img src="{{../userInfo.profilePicture}}">
+                                        <div class="author">{{../userInfo.username}}</div>
+                                    </div>
+                                
+                                    <div class="post-content"> 
+                                        <span class="post-content-text">{{post}}</span>
+                                        <a href="/trial/{{restaurant}}">See More</a>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input">
+                        <span class="headerreg">Latest's Comment</span>
+                        <div id="view-profile-comment">
+                            <div id="posts-container">
+                                {{#each allComment}}
+                                <div class="post">
+                                    <div class="post-detail">
+                                        <img src="{{../userInfo.profilePicture}}">
+                                        <div class="author">{{../userInfo.username}}</div>
+                                    </div>
+                                
+                                    <div class="post-content"> 
+                                        <span class="post-content-text" >{{content}}</span>
+                                        <a href="/trial/{{parentPostContent}}/post">See More</a>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="submit-button">
+                    <input type="submit" value="Go Back Home">
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <script src="/js/viewProfile.js"></script>
+</body>
+</html>

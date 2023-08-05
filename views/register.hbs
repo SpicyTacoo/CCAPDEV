@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ACDF87, #1E5631);
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/register.js" defer></script>
+
+    <title>Register Page</title>
+</head>
+
+<body>
+    <div id="error-container"></div>
+
+    <div class="container" id="container">
+        <div class="inner-container">
+            <div class="title">Register</div>
+
+            <form action="/register" method="post" id="review-form" autocomplete="off">
+                <div class="user-details">
+                    <div class="input">
+                        <span class="headerreg">First Name</span>
+                        <input type="text" name="firstName" id="firstname" class="first-name" placeholder="Enter First Name" required> 
+                    </div>
+    
+                    <div class="input">
+                        <span class="headerreg">Last Name</span>
+                        <input type="text" name="lastName" id="lastname" class="last-name" placeholder="Enter Last Name" required>
+                    </div>
+    
+                    <div class="input">
+                        <span class="headerreg">Username</span>
+                        <input type="text" name="username" id="username" class="username" placeholder="Enter Username" required>
+                    </div>
+    
+                    <div class="input">
+                        <span class="headerreg">Password</span>
+                        <input type="password" name="password" id="password" class="password" placeholder="Enter Password" required>
+                    </div>
+    
+                    <div class="input">
+                        <span class="headerreg">Avatar</span>
+                        <input type="file" name="profilePicture" class="avatar" id="image-file" placeholder="Avatar" accept="image/*" onchange="showFileName()" required>
+                        <label for="image-file">
+                            <i class="material-symbols-outlined">
+                                add_photo_alternate
+                            </i>
+                            <a id="img-file">Choose an Image</a>
+                        </label>
+                    </div>
+    
+                    <div class="input">
+                        <span class="headerreg">Short Description</span>
+                        <input type="text" name="shortDescription" id="shortDescription" class="description" placeholder="Short Description">
+                    </div>
+                </div>
+
+                <div class="submit-button">
+                    <input type="submit" id="submit-button" value="Submit">
+                </div>
+
+
+                <script>
+                    document.getElementById('review-form').addEventListener('submit', (event) => {
+                        event.preventDefault();
+                        let url = "https://script.google.com/macros/s/AKfycbyJ0UTeofsJ0MJYv6a072kdXUQhISAVtJVJWiSoAFDVD0wgxEGcmIUQUlIuOhLnTpHk/exec";
+                        let fileInput = document.getElementById("image-file");
+
+                        if (fileInput.files.length > 0) {
+                            let fr = new FileReader();
+                            fr.addEventListener('loadend', () => {
+                                let res = fr.result;
+                                let spt = res.split("base64,")[1];
+                                let obj = {
+                                    base64: spt,
+                                    type: fileInput.files[0].type,
+                                    name: fileInput.files[0].name
+                                }
+                                fetch(url, {
+                                    method: "POST",
+                                    body: JSON.stringify(obj)
+                                })
+                                .then(r => r.text())
+                                .then(link => {
+                                    const responseLink = link;
+                                    console.log("Image link:", link);
+
+                                    const firstName = document.getElementById('firstname').value;
+                                    const lastName = document.getElementById('lastname').value;
+                                    const username = document.getElementById('username').value;
+                                    const password = document.getElementById('password').value;
+                                    const shortDescription = document.getElementById('shortDescription').value;
+                                    const pictureLink = responseLink;
+
+                                    console.log(firstName);
+                                    console.log(lastName);
+                                    console.log(username);
+                                    console.log(password);
+                                    console.log(shortDescription);
+                                    console.log(pictureLink);
+
+                                    const formData = {
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        username: username,
+                                        password: password,
+                                        shortDescription: shortDescription,
+                                        profilePicture: pictureLink
+                                    };
+
+                                    try {
+                                        fetch('/register', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify(formData),
+                                        })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Failed to add user');
+                                            }
+                                            window.location.href = '/login';
+                                        })
+                                        .catch(error => {
+                                            console.error('Error adding user:', error);
+                                            alert('Failed to add user. Please try again.');
+                                        });
+                                    } catch (error) {
+                                        console.error('Error adding user:', error);
+                                        alert('Failed to add user. Please try again.');
+                                    }
+                                })
+                                .catch(error => console.error("Error:", error));
+                            });
+                            fr.readAsDataURL(fileInput.files[0]);
+                        } else {
+                            const responseLink = "https://drive.google.com/uc?id=1__sxuhxJK36vVCJQsvKU1Ce6DJClzoQt&export=download";
+                            console.log("Image link:", responseLink);
+
+                            const firstName = document.getElementById('firstname').value;
+                            const lastName = document.getElementById('lastname').value;
+                            const username = document.getElementById('username').value;
+                            const password = document.getElementById('password').value;
+                            const shortDescription = document.getElementById('shortDescription').value;
+                            const pictureLink = responseLink;
+
+                            console.log(firstName);
+                            console.log(lastName);
+                            console.log(username);
+                            console.log(password);
+                            console.log(shortDescription);
+                            console.log(pictureLink);
+
+                            const formData = {
+                                firstName: firstName,
+                                lastName: lastName,
+                                username: username,
+                                password: password,
+                                shortDescription: shortDescription,
+                                profilePicture: pictureLink
+                            };
+
+                            try {
+                                fetch('/register', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(formData),
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Failed to add user');
+                                    }
+                                    window.location.href = '/login';
+                                })
+                                .catch(error => {
+                                    console.error('Error adding user:', error);
+                                    alert('Failed to add user. Please try again.');
+                                });
+                            } catch (error) {
+                                console.error('Error adding user:', error);
+                                alert('Failed to add user. Please try again.');
+                            }
+                        }
+                    });
+                </script>
+            </form>
+
+            <div class="login-link">Already have an account?<a href="/login"> Login here</a> </div>
+
+        </div>
+    </div>
+</body>
+</html>

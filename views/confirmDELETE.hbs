@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ACDF87, #1E5631);
+        }
+
+        .cancel-button {
+            height: 45px;
+            width: 100%;
+            outline: none;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ACDF87, #1E5631);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -20px;
+        }
+
+        .cancel-button:hover{
+            filter: brightness(80%);
+            cursor: pointer;
+        }
+    </style>
+
+    <title>Confirm Deletion</title>
+</head>
+<body>
+    <div class="container2">
+        <div class="inner-container2">
+            <div class="title">Confirm Deletion</div>
+
+            <form action="/confirm-deletion/{{key}}/{{postId}}" method="post">
+                <div class="user-details" style="flex-direction: column">
+                    <p>Are you sure you want to delete post?</p>
+                    <div style="margin-left: 20px; margin-top: 15px">{{key}}</div>
+
+                    <div class="input">
+                        <input type="password" class="password" name="password" placeholder="Enter Password to Confirm" required>
+                    </div>
+                </div>
+
+                <div class="submit-button">
+                    <input type="submit" value="Confirm Deletion">
+                </div>
+
+                <div class="cancel-button" onclick="window.location.href='/trial/{{postOwner.restaurant}}'">
+                    <a>Cancel</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>

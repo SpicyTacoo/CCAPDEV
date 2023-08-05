@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #ACDF87, #1E5631);
+    }
+
+    .resizable-textarea {
+        resize: vertical;
+        overflow: auto;
+    }
+
+    #myTextarea {
+        width: 100%;
+        height: 100%;
+    }
+
+    .cancel-button {
+        height: 45px;
+        width: 100%;
+        outline: none;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, #ACDF87, #1E5631);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: -20px;
+    }
+
+    .cancel-button:hover{
+        filter: brightness(80%);
+        cursor: pointer;
+    }
+</style>
+
+
+    <title>Confirm Edit Comment</title>
+</head>
+<body>
+    <div class="container2">
+        <div class="inner-container2">
+            <div class="title">Confirm Edit</div>
+
+            <!-- Include the key in the form action using a hidden input field -->
+            <form id="editForm" action="/confirm-edit-comment/" method="post">
+                <input type="hidden" name="key" value="{{key}}">
+                <div class="user-details">
+                    <p>Edit the post directly in the textbox</p>
+                    <div class="input resizable-textarea">
+                        <textarea id="myTextarea" placeholder="Type your text here...">{{key}}</textarea>
+                    </div>
+
+                    <div class="input">
+                        <input type="password" class="password" name="password" placeholder="Enter Password to Confirm Edit" required>
+                    </div>
+                </div>
+
+                <div class="submit-button">
+                    <input type="submit" value="Confirm Edit">
+                </div>
+                
+                        <div class="cancel-button" onclick="window.location.href='/trial/{{postOwner.restaurant}}'">
+          <a>Cancel</a>
+        </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const editForm = document.getElementById("editForm");
+            const textarea = document.getElementById("myTextarea");
+            const postId = '{{postId}}';
+
+            editForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                const editedText = textarea.value;
+
+                // Append the key and editedText to the form action
+                editForm.action = `/confirm-edit-comment/${editForm.key.value}/${editedText}/${postId}`;
+
+                editForm.submit();
+            });
+        });
+    </script>
+</body>
+</html>

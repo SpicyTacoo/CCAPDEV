@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Comment Section</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+    <link rel="stylesheet" href="/css/reviews.css">
+    <link rel="stylesheet" href="/css/response.css">
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+
+  <header>
+    {{> header}}
+  </header>
+
+  <style>
+    .starrating {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 50px; 
+      color: #FDCC0D; 
+    }
+  </style>
+  
+  <body>
+    <div class="web">
+      <h1>Featured Establishments</h1>
+      <div class="feature">
+        {{#each resto}}
+        <div class="resto">
+          <img class="restoimg" src={{logo}}>
+          <div class="descrip">
+            <div class="starrating" id="rating-{{@index}}">
+              <script>
+                (function() {
+                  const averageRating = {{averageRating}};
+                  const fullStars = Math.floor(averageRating);
+                  const halfStar = Math.round(averageRating - fullStars);
+                  const emptyStars = 5 - fullStars - halfStar;
+                  let stars = "";
+
+                  for (let i = 0; i < fullStars; i++) {
+                    stars += '<i class="fa fa-star"></i>';
+                  }
+                  if (halfStar === 1) {
+                    stars += '<i class="fa fa-star-half"></i>';
+                  }
+                  for (let i = 0; i < emptyStars; i++) {
+                    stars += '<i class="fa fa-star-o"></i>';
+                  }
+
+                  const ratingDiv = document.getElementById('rating-{{@index}}');
+                  ratingDiv.innerHTML = stars;
+                })();
+              </script>
+            </div>
+          </div>
+          <h2 class="name">{{restaurant}}</h2>
+          <p class="dp">{{description}}</p>
+          <a class="reviewp" data-post="{{restaurant}}">View Reviews</a>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <script>
+      // Move the event listener code to the end of the body
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewcommentButtons = document.querySelectorAll('.reviewp');
+        viewcommentButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const post = button.getAttribute('data-post');
+            const encodedPost = encodeURIComponent(post);
+            window.location.href = `/trial/${encodedPost}`;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

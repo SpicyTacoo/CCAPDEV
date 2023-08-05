@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Establishments</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="/icons/logo.png" sizes="32x32">
+        <link rel="stylesheet" href="/css/reviews.css">
+        <link rel="stylesheet" href="/css/response.css">
+        <script src="/js/stars.js" defer></script>
+    </head>
+
+    <header>
+        {{> header}}
+    </header>
+
+    <style>
+        .outer-box {
+            background-color: #f2f2f2;
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #restaurant-info {
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .par {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <body>
+        <div class="container">
+            <div class="outer-box" style="margin-top: 50px;">
+                <div id="restaurant-info">
+                    <h1>{{restaurantData.restaurant}}</h1>
+                    <p class="par">Address: {{restaurantData.address}}</p>
+                    <p class="par">Contact: {{restaurantData.contact}}</p>
+                    <p class="par">Description: {{restaurantData.description}}</p>
+
+                    {{#if isLoggedIn}}
+                    <p>Welcome, {{username}} (ID: {{userId}})</p>
+                    {{else}}
+                    <p>Welcome, guest!</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <div id="comments-container" style="min-height: auto;">
+                <h2 style="color: white;">Reviews</h2>
+
+                {{#each filteredResultLIKE}}
+                <div class="post">
+                    <div class="comment" data-comment-id="{{this._id}}">
+                        {{#each pic}}
+                            <img src="{{profilePicture}}" alt="{{shortDescription}}" style="width: 30px; height: 30px; border-radius:50%; margin-right: 10px; float:left">
+                        {{/each}}                        
+                        <div class="owner-container">
+                            <p class="owner-name" style="font-weight: bold;"><a href="/view%20profile/{{this.username}}" style="text-decoration: none; color: black;"
+                                onmouseover="this.style.color='blue';" onmouseout="this.style.color='black';">{{this.username}}</a>
+                            </p><br>
+                            <span id="rating-value">⭐ Ratings: {{this.ratings}} out of 5</span>
+                        </div>
+                        
+                        <p class="reply-text">{{this.post}}
+                            {{#if this.isEdited}}
+                                <span style="font-style: italic; font-size: 12px; color: #666;">(Edited)</span>
+                            {{/if}}
+                        </p>
+                        {{#if this.pictures}}
+                        <div style="margin: 5px 5px">
+                            <img src="{{this.pictures}}" style="max-width: 100%;">
+                        </div><br><br>
+                        {{/if}}
+
+                        <div class="comment-actions">
+                            {{#if isLoggedIn}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button">Edit</button>
+                                    <button class="delete-button">Delete</button>
+                                {{/when}}
+                            {{else}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button" onclick="redirectToLogin()">Edit</button>
+                                    <button class="delete-button" onclick="redirectToLogin()">Delete</button>
+                                {{/when}}
+                            {{/if}}
+                            <button class="like-btn" style="color: red;" id="like-btn-{{this._id}}" onclick="likeComment('{{this._id}}')">▲</button>
+                            <span class="like-count" style="color: red;" id="like-count-{{this._id}}">{{this.liked.length}}</span>
+                            <button class="dislike-btn active" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
+                            <span class="dislike-count" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
+                            <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+                {{#each filteredResultDISLIKE}}
+                <div class="post">
+                    <div class="comment" data-comment-id="{{this._id}}">
+                        {{#each pic}}
+                            <img src="{{profilePicture}}" alt="{{shortDescription}}" style="width: 30px; height: 30px; border-radius:50%; margin-right: 10px; float:left">
+                        {{/each}}                        
+                        <div class="owner-container">
+                            <p class="owner-name" style="font-weight: bold;"><a href="/view%20profile/{{this.username}}" style="text-decoration: none; color: black;"
+                                onmouseover="this.style.color='blue';" onmouseout="this.style.color='black';">{{this.username}}</a>
+                            </p><br>
+                            
+                            <span id="rating-value">⭐ Ratings: {{this.ratings}} out of 5</span>
+                        </div>
+                        
+                        <p class="reply-text">{{this.post}}
+                            {{#if this.isEdited}}
+                                <span style="font-style: italic; font-size: 12px; color: #666;">(Edited)</span>
+                            {{/if}}
+                        </p>
+                        {{#if this.pictures}}
+                        <div style="margin: 5px 5px">
+                            <img src="{{this.pictures}}" style="max-width: 100%;">
+                        </div><br><br>
+                        {{/if}}
+
+                        <div class="comment-actions">
+                            {{#if isLoggedIn}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button">Edit</button>
+                                    <button class="delete-button">Delete</button>
+                                {{/when}}
+                            {{else}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button" onclick="redirectToLogin()">Edit</button>
+                                    <button class="delete-button" onclick="redirectToLogin()">Delete</button>
+                                {{/when}}
+                            {{/if}}
+                            <button class="like-btn"  id="like-btn-{{this._id}}" onclick="likeComment('{{this._id}}')">▲</button>
+                            <span class="like-count"  id="like-count-{{this._id}}">{{this.liked.length}}</span>
+                            <button class="dislike-btn active" style="color: blue;" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
+                            <span class="dislike-count" style="color: blue;" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
+                            <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{#each filteredResultNEITHER}}
+                <div class="post">
+                    <div class="comment" data-comment-id="{{this._id}}">
+                        {{#each pic}}
+                            <img src="{{profilePicture}}" alt="{{shortDescription}}" style="width: 30px; height: 30px; border-radius:50%; margin-right: 10px; float:left">
+                        {{/each}}                        
+                        <div class="owner-container">
+                            <p class="owner-name" style="font-weight: bold;">
+                            <p class="owner-name" style="font-weight: bold;"><a href="/view%20profile/{{this.username}}" style="text-decoration: none; color: black;"
+                                onmouseover="this.style.color='blue';" onmouseout="this.style.color='black';">{{this.username}}</a>
+                            </p><br>
+                            <span id="rating-value">⭐ Ratings: {{this.ratings}} out of 5</span>
+                        </div>
+                        
+                        <p class="reply-text">{{this.post}}
+                            {{#if this.isEdited}}
+                                <span style="font-style: italic; font-size: 12px; color: #666;">(Edited)</span>
+                            {{/if}}
+                        </p>
+                        
+                        {{#if this.pictures}}
+                        <div style="margin: 5px 5px">
+                            <img src="{{this.pictures}}" style="max-width: 100%;">
+                        </div>
+                        {{/if}}
+                        <div class="comment-actions">
+                            {{#if isLoggedIn}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button">Edit</button>
+                                    <button class="delete-button">Delete</button>
+                                {{/when}}
+                            {{else}}
+                                {{#when ../currentUser 'eq' this.username}}
+                                    <button class="edit-button" onclick="redirectToLogin()">Edit</button>
+                                    <button class="delete-button" onclick="redirectToLogin()">Delete</button>
+                                {{/when}}
+                            {{/if}}
+                            <button class="like-btn" id="like-btn-{{this._id}}" onclick="likeComment('{{this._id}}')">▲</button>
+                            <span class="like-count" id="like-count-{{this._id}}">{{this.liked.length}}</span>
+                            <button class="dislike-btn active" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
+                            <span class="dislike-count" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
+                            <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+                <script>
+                    const viewcommentButtons = document.querySelectorAll('.view-comment-button');
+                    viewcommentButtons.forEach((button) => {
+                        button.addEventListener('click', () => {
+                            const post = button.getAttribute('data-post');
+                            const encodedPost = encodeURIComponent(post);
+                            window.location.href = `/trial/${encodedPost}/post`;
+                        });
+                    });
+
+                    const clearButtons = document.querySelectorAll('.clear-btn');
+                    clearButtons.forEach((clearButton) => {
+                        clearButton.addEventListener('click', function() {
+                            const commentId = this.dataset.commentId;
+                            clear(commentId);
+                        });
+                    });
+            </script>
+
+            {{#if isLoggedIn}}
+            <script>
+                // Function to handle the like action for a comment
+                function editComment(commentElement, postContent, commentId) {
+                    window.location.href = `/confirmEDIT/${postContent}/${commentId}`;
+                }
+
+                function deleteComment(commentElement, postContent, commentId) {
+                    window.location.href = `/confirmDELETE/${postContent}/${commentId}`;
+                }
+
+                // Add event listeners to all edit buttons
+                const editButtons = document.querySelectorAll('.edit-button');
+                editButtons.forEach((button) => {
+                    const commentElement = button.parentElement.parentElement;
+                    button.addEventListener('click', function () {
+                        const origpostContent = commentElement.querySelector('.reply-text').textContent;
+                        const postContent = origpostContent.replace(/\s*\(Edited\)\s*$/, '');
+                        const commentId = commentElement.getAttribute('data-comment-id');
+
+                        editComment(commentElement, postContent, commentId);
+                    });
+                });
+
+                // Add event listeners to all delete buttons
+                const deleteButtons = document.querySelectorAll('.delete-button');
+                deleteButtons.forEach((button) => {
+                    const commentElement = button.parentElement.parentElement;
+                    button.addEventListener('click', function () {
+                        const origpostContent = commentElement.querySelector('.reply-text').textContent;
+                        const postContent = origpostContent.replace(/\s*\(Edited\)\s*$/, '');
+                        const commentId = commentElement.getAttribute('data-comment-id');
+
+                        deleteComment(commentElement, postContent, commentId);
+                    });
+                });
+
+                function likeComment(commentId) {
+                    fetch(`/like-comment/${commentId}`, {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies for authentication (if required)
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                    if (data.success) {
+                        // Update the like count
+                        const likeCountElement = document.getElementById(`like-count-${commentId}`);
+                        likeCountElement.textContent = data.likeCount;
+                        // Update the dislike count in case the user unliked the comment
+                        const dislikeCountElement = document.getElementById(`dislike-count-${commentId}`);
+                        dislikeCountElement.textContent = data.dislikeCount;
+                        location.reload();
+                    } else {
+                        // Handle the case where the like action failed (e.g., user not logged in)
+                        alert('Failed to like the comment. Please try again later.');
+                    }
+                    })
+                    .catch((error) => {
+                    console.error('Error liking the comment:', error);
+                    });
+                }
+
+                // Function to handle the dislike action for a comment
+                function dislikeComment(commentId) {
+                    fetch(`/dislike-comment/${commentId}`, {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies for authentication (if required)
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            // Update the dislike count
+                            const dislikeCountElement = document.getElementById(`dislike-count-${commentId}`);
+                            dislikeCountElement.textContent = data.dislikeCount;
+                            // Update the like count in case the user undisliked the comment
+                            const likeCountElement = document.getElementById(`like-count-${commentId}`);
+                            likeCountElement.textContent = data.likeCount;
+                                    location.reload();
+                        } else {
+                            // Handle the case where the dislike action failed (e.g., user not logged in)
+                            alert('Failed to dislike the comment. Please try again later.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error disliking the comment:', error);
+                    });
+                }
+
+                function clear(commentId) {
+                    fetch(`/clear-reactions/${commentId}`, {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies for authentication (if required)
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            const likeButton = document.getElementById(`like-btn-${commentId}`);
+                            likeButton.style.color = "black"
+                            const dislikeButton = document.getElementById(`dislike-btn-${commentId}`);
+                            dislikeButton.style.color = "black"
+
+                            const likeCount = document.getElementById(`like-count-${commentId}`);
+                            likeCount.style.color = "black"
+                            const dislikeCount = document.getElementById(`dislike-count-${commentId}`);
+                            dislikeCount.style.color = "black"
+
+                            console.log('Reactions cleared successfully.');
+                            location.reload();
+
+                        } else {
+                            alert('Failed to clear reactions. Please try again later.');
+                        }
+                    })
+                    .catch((error) => {
+                    console.error('Error clearing reactions:', error);
+                    });
+                }
+            </script>
+            {{else}}
+            <script>
+                function likeComment(commentId) {           
+                    window.location.href = '/login';
+                }
+
+                function dislikeComment(commentId) {
+                    window.location.href = '/login';
+                }
+
+                function clear(commentId) {                    
+                    window.location.href = '/login';
+                }
+            </script>
+            {{/if}}
+        </div>
+            
+        {{#if isLoggedIn}}
+        <div>
+            <button type="submit" class="write-review-btn" onclick="openPopup()">Write a Review</button>
+            <div class="review-container-popup" id="popup">
+                <div class="restaurant-name">
+                    <p>{{restaurantData.restaurant}}</p>
+                </div>
+        
+                <div class="user-container">
+                    <div><img src="{{pic}}" class="profile"/></div>
+                        <div class="user">
+                            <a class="name">{{username}}</a>
+                            <a class="notice">Posting publicly</a>
+                        </div>
+                    </div>
+        
+                    <div class="stars">
+                        <i class="fa fa-star fa-2x active"></i>
+                        <i class="fa fa-star fa-2x active"></i>
+                        <i class="fa fa-star fa-2x active"></i>
+                        <i class="fa fa-star fa-2x active"></i>
+                        <i class="fa fa-star fa-2x active"></i>
+                    </div>
+                    <div id="review-rating-value">5 out of 5</div>
+        
+                    <div class="write-review">
+                        <form id="review-form">
+                            <textarea class="textbox" id="comment-input" oninput="validateTextarea()" placeholder="Share details of your experience at this place"></textarea>
+                            <div class="button-container">
+                                <div>
+                                    <input type="file" accept="image/*" id="imageInput">
+                                    <img src="" alt="">
+                                </div>
+                                <input type="button" value="Cancel" class="button" onclick="closePopup()">
+                                <input type="submit" value="Post" class="button" onclick="closePopup()" disabled id="postButton">
+                            </div>
+                            <script>
+                                function validateTextarea() {
+                                    const textarea = document.getElementById('comment-input');
+                                    const postButton = document.getElementById('postButton');
+                                    const isTextareaEmpty = textarea.value.trim() === '';
+
+                                    postButton.disabled = isTextareaEmpty;
+                                }
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>                
+                function openPopup() {
+                    popup.classList.add("open-popup");
+                }
+
+                function closePopup() {
+                    popup.classList.remove("open-popup");
+                }
+
+                /** ADDED FOR POSTING REVIEWS */ 
+               document.getElementById('review-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    let url = "https://script.google.com/macros/s/AKfycbyJ0UTeofsJ0MJYv6a072kdXUQhISAVtJVJWiSoAFDVD0wgxEGcmIUQUlIuOhLnTpHk/exec";
+    let fileInput = document.getElementById("imageInput");
+
+    let responseLink = "";
+    if (fileInput && fileInput.files.length > 0) {
+        let fr = new FileReader();
+        fr.addEventListener('loadend', () => {
+            let res = fr.result;
+            let spt = res.split("base64,")[1];
+            let obj = {
+                base64: spt,
+                type: fileInput.files[0].type,
+                name: fileInput.files[0].name
+            }
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify(obj)
+            })
+            .then(r => r.text())
+            .then(link => {
+                responseLink = link;
+                addReview(responseLink);
+            })
+            .catch(error => console.error("Error:", error));
+        });
+        fr.readAsDataURL(fileInput.files[0]);
+    } else {
+        addReview(responseLink);
+    }
+
+    function addReview(pictureLink) {
+        const userId = "{{userId}}";
+        const restoId = "{{restaurantData._id}}";
+        const postText = document.getElementById('comment-input').value;
+
+        const reviewRatingText1 = document.getElementById('review-rating-value').textContent; //get string
+        const reviewRatingText2 = reviewRatingText1.match(/\d+/)[0]; //get num but as string
+        const ratings = parseInt(reviewRatingText2, 10); //convert to num
+
+        const encodedRestaurant = "{{restaurantData.restaurant}}";
+        const restaurant = encodedRestaurant.replace(/&#x27;/g, "'");
+        const username = "{{username}}";
+
+        console.log(userId);
+        console.log(restoId);
+        console.log(postText);
+        console.log(ratings);
+        console.log(pictureLink);
+        console.log(restaurant);
+        console.log(username);
+
+        const formData = {
+            user: userId,
+            resto: restoId,
+            post: postText,
+            ratings: ratings,
+            liked: [],
+            disliked: [],
+            isDeleted: false,
+            isEdited: false,
+            pictures: pictureLink,
+            restaurant: restaurant,
+            username: username
+        };
+
+        try {
+            fetch('/trial/:parameter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add review');
+                }
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error adding review:', error);
+                alert('Failed to add review. Please try again.');
+            });
+        } catch (error) {
+            console.error('Error adding review:', error);
+            alert('Failed to add review. Please try again.');
+        }
+    }
+});
+
+                
+            </script>
+        </div>
+
+            </div>
+            {{else}}
+            <script>
+                function redirectToLogin() {
+                    // Redirect the user to the login page
+                    window.location.href = '/login';
+                }
+            </script>
+            {{/if}}
+        </div>
+   </body>
+</html>

@@ -1,0 +1,224 @@
+body {
+  margin: 0;
+  padding-top: 50px;
+  font-family: 'Mukta', sans-serif;
+  background-color: white;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #1E5631;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.header .button {
+  padding: 5px 10px;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+
+.header .button:hover {
+  background-color: lightgray;
+  border-radius: 0%;
+}
+
+.header .buttonlog {
+  padding: 5px 10px;
+  color: #d21404;
+  border: none;
+  cursor: pointer;
+}
+
+.header .buttonlog:hover {
+  background-color: darksalmon;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  height: 35px;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+.profpic {
+  display: flex; 
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}
+
+#logopic {
+  width: 45px;
+  height: 45px;
+}
+
+#commentpic {
+  width: 20px;
+  height: 20px;
+}
+
+.search-bar input[type="text"] {
+  flex: 1;
+  border: none;
+  padding: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  outline: none;
+}
+
+.search-bar input[type="text"]:hover {
+  background-color: #D3D3D3;
+}
+
+.search-bar input[type="text"] {
+  flex: 1;
+  border: none;
+  padding: 5px;
+  font-size: 13px;
+  width: 1000px;
+}
+
+.search-bar button {
+  padding: 5px 10px;
+  background-color: #4C9A2A;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #ACDF87;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  align-items: center;
+}
+
+#dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  right: 40%;
+}
+
+.dropdown:hover #dropdownContent {
+  display: block;
+}
+
+.dropdown a {
+  display: block;
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown a:hover {
+  background-color: #ddd;
+}
+
+.hide {
+  display: none;
+}
+
+#comments-container {
+  width: 1000px;
+  /* min-height: 500px; */
+  margin: 20px auto 20px; 
+  padding: 30px;
+  background-color: #5c5e60;
+  padding-top: 3px;
+  border-radius: 10px;
+}
+
+#comments-list {
+  margin-bottom: 20px;
+}
+
+.comment {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px; 
+}
+
+.comment-actions button {
+  margin-right: 5px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 16px;
+}
+
+.comment-actions button:hover {
+  color: black;
+}
+
+.comment-actions button:focus {
+  outline: none;
+}
+
+.comment-actions .like-btn {
+  color: black;
+}
+
+.comment-actions .dislike-btn {
+  color: black;
+}
+
+.comment-actions .like-btn:hover {
+  color: #FF5700;
+}
+
+.comment-actions .dislike-btn:hover {
+  color: #7193FF;
+}
+
+.profile-picture {
+  width: 30px; 
+  height: 30px; 
+  border-radius: 50%;
+  margin-right: 10px;
+  float: left; 
+}
+
+.comment p {
+  margin: 0;
+  overflow: hidden; 
+  overflow-wrap: break-word;
+}
+
+.comment-actions {
+  overflow: hidden;
+}
+
+.owner-container {
+  display: flex;
+  align-items: center;
+}
+
+.owner-name {
+  padding-right: 5px;
+  
+}
+
+.verified-symbol {
+  text-align: right;
+}
+
+

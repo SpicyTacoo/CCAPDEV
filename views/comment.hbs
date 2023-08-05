@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comment Section</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/reviews.css">
+        <link rel="stylesheet" href="/css/response.css">
+    </head>
+
+    <header>
+        {{> header}}
+    </header>
+
+    <body>
+        <div class="container">
+            <div id="comments-container">
+                <h1 style="color: white;">Reviews</h1>
+                {{#each posts}}
+                <div class="post">
+                    <div class="comment">
+                        <img src="{{image}}" class="profile-picture">
+                        <div class="owner-container">
+                            <p class="owner-name" style="font-weight: bold;">{{ownerpost}}</p><br>
+                            <span id="rating-value">⭐ Ratings: {{rating}} out of 5</span>
+                        </div>
+                        
+                        <p class="reply-text">{{post}}</p>
+                        
+                        <div class="comment-actions">
+                            <button class="edit-button">Edit</button>
+                            <button class="delete-button">Delete</button>
+                            <button class="reply-button">Reply</button>
+                            <button id="like-btn" class="btn">▲</button>
+                            <span id="like-count">{{likes}}</span>
+                            <button id="dislike-btn" class="btn">▼</button>
+                            <span id="dislike-count">{{dislikes}}</span>
+                        </div>
+
+                        {{!-- Comments for this post --}}
+                        {{#each comments}}
+                        <div class="comment {{index}}">
+                            <img src="{{image}}" class="profile-picture" style="margin-left: 50px;">
+                            <div class="owner-container">
+                                <p class="owner-name" style="font-weight: bold;">{{commenter}}</p><br>
+                            </div>
+                            <p style="font-weight: bold; color: grey; margin-left: 80px;">replying to {{tagged}}</p>
+                            <p class="reply-text"; style="margin-left: 90px;">{{replyText}}</p>
+                            <div class="comment-actions" style="margin-left: 88px;">
+                                <button class="edit-button">Edit</button>
+                                <button class="delete-button">Delete</button>
+                                <button class="reply-button">Reply</button>
+                                <button id="like-btn" class="btn">▲</button>
+                                <span id="like-count">{{likes}}</span>
+                                <button id="dislike-btn" class="btn">▼</button>
+                                <span id="dislike-count">{{dislikes}}</span>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+                    {{#if isLoggedIn}}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                function editComment(button, replyTextElement) {
+                    const editMode = button.classList.contains('editing');
+
+                    if (editMode) {
+                        saveEditedComment(replyTextElement,replyTextElement.dataset.originalText);
+                        button.textContent = "Edit";
+                        button.classList.remove('editing');
+                    } else {
+                        replyTextElement.dataset.originalText = replyTextElement.textContent;
+                        replyTextElement.contentEditable = true;
+                        replyTextElement.classList.add("editable");
+                        button.textContent = "Save";
+                        button.classList.add('editing');
+                    }
+                }
+
+                function saveEditedComment(commentTextElement, originalCommentText) {
+                    commentTextElement.contentEditable = false;
+                    commentTextElement.classList.remove("editable");
+                    var editedText = commentTextElement.textContent;
+                    
+                    var existingEditedNote = commentTextElement.querySelector(".edited-note");
+                    if (existingEditedNote) {
+                    existingEditedNote.remove(); 
+                    }
+                    
+                    if (editedText.trim() === "") {
+                    commentTextElement.textContent = originalCommentText;
+                    } else if (editedText !== originalCommentText) {
+                    var editedNote = document.createElement("span");
+                    editedNote.textContent = " (edited)";
+                    editedNote.className = "edited-note";
+                    editedNote.style.color = "grey";
+                    commentTextElement.appendChild(editedNote);
+                    }
+                }
+
+                function deleteComment(commentElement) {
+                    // Delete the comment here, e.g., remove it from the database
+                    commentElement.remove();
+                }
+
+                // Add event listeners to all edit buttons
+                const editButtons = document.querySelectorAll('.edit-button');
+                editButtons.forEach((button) => {
+                    const replyTextElement = button.parentElement.previousElementSibling;
+                    button.addEventListener('click', function () {
+                        editComment(button, replyTextElement);
+                    });
+                });
+
+                // Add event listeners to all delete buttons
+                const deleteButtons = document.querySelectorAll('.delete-button');
+                deleteButtons.forEach((button) => {
+                    const commentElement = button.parentElement.parentElement;
+                    button.addEventListener('click', function () {
+                        deleteComment(commentElement);
+                    });
+                });
+
+                const likeButtons = document.querySelectorAll('.btn#like-btn');
+                likeButtons.forEach((likeButton) => {
+                    likeButton.addEventListener('click', function () {
+                        const commentElement = likeButton.parentElement.parentElement;
+                        handleLikeClick(commentElement);
+                    });
+                });
+
+                // Add event listeners to all dislike buttons
+                const dislikeButtons = document.querySelectorAll('.btn#dislike-btn');
+                dislikeButtons.forEach((dislikeButton) => {
+                    dislikeButton.addEventListener('click', function () {
+                        const commentElement = dislikeButton.parentElement.parentElement;
+                        handleDislikeClick(commentElement);
+                    });
+                });
+
+                function handleLikeClick(commentElement) {
+                    const likeButton = commentElement.querySelector('.btn#like-btn');
+                    const dislikeButton = commentElement.querySelector('.btn#dislike-btn');
+                    const likeCountElement = commentElement.querySelector('#like-count');
+                    const dislikeCountElement = commentElement.querySelector('#dislike-count');
+                    let likeCounter = parseInt(likeCountElement.textContent, 10);
+                    let dislikeCounter = parseInt(dislikeCountElement.textContent, 10);
+
+                    if (!likeButton.classList.contains('active')) {
+                        likeCounter++;
+                        likeButton.classList.add('active');
+
+                        // If the dislike button was active, reset its state
+                        if (dislikeButton.classList.contains('active')) {
+                            dislikeCounter--;
+                            dislikeButton.classList.remove('active');
+                        }
+                    } else {
+                        likeCounter--;
+                        likeButton.classList.remove('active');
+                    }
+
+                    likeCountElement.textContent = likeCounter;
+                    dislikeCountElement.textContent = dislikeCounter;
+                }
+
+                function handleDislikeClick(commentElement) {
+                    const likeButton = commentElement.querySelector('.btn#like-btn');
+                    const dislikeButton = commentElement.querySelector('.btn#dislike-btn');
+                    const likeCountElement = commentElement.querySelector('#like-count');
+                    const dislikeCountElement = commentElement.querySelector('#dislike-count');
+                    let likeCounter = parseInt(likeCountElement.textContent, 10);
+                    let dislikeCounter = parseInt(dislikeCountElement.textContent, 10);
+
+                    if (!dislikeButton.classList.contains('active')) {
+                        dislikeCounter++;
+                        dislikeButton.classList.add('active');
+
+                        // If the like button was active, reset its state
+                        if (likeButton.classList.contains('active')) {
+                            likeCounter--;
+                            likeButton.classList.remove('active');
+                        }
+                    } else {
+                        dislikeCounter--;
+                        dislikeButton.classList.remove('active');
+                    }
+
+                    likeCountElement.textContent = likeCounter;
+                    dislikeCountElement.textContent = dislikeCounter;
+                }
+
+                // Fix reply functionality
+                const replyButtons = document.querySelectorAll('.reply-button');
+                replyButtons.forEach((button) => {
+                    button.addEventListener('click', function () {
+                        const commentElement = button.parentElement.parentElement;
+                        openReplyForm(commentElement);
+                    });
+                });
+
+                function openReplyForm(commentElement) {
+                    const popup = document.createElement("div");
+                    popup.className = "popup";
+                    
+                    const textarea = document.createElement("textarea");
+                    textarea.id = "replyText";
+                    textarea.placeholder = "Enter owner's response...";
+                    popup.appendChild(textarea);
+                    
+                    const buttonContainer = document.createElement("div");
+                    buttonContainer.className = "reply-button-container";
+
+                    const submitButton = document.createElement("button");
+                    submitButton.textContent = "Submit";
+                    submitButton.className = "button";
+                    submitButton.addEventListener("click", function () {
+                        const index = Array.from(commentElement.parentElement.children).indexOf(commentElement);
+                        submitReply(index);
+                        closePopup();
+                    });
+
+                    const closeButton = document.createElement("button");
+                    closeButton.textContent = "Close";
+                    closeButton.className = "button";
+                    closeButton.addEventListener("click", closePopup);
+
+                    buttonContainer.appendChild(submitButton);
+                    buttonContainer.appendChild(closeButton);
+                    popup.appendChild(buttonContainer);
+
+                    document.body.appendChild(popup);
+                }
+
+                function submitReply(index) {
+                    const replyText = document.getElementById("replyText").value;
+                    document.getElementById("replyText").value = "";
+                    postReply(index, replyText);
+                }
+
+                function postReply(index, replyText) {
+                    //add to database and refresh the page
+                }
+                
+                function closePopup() {
+                    const popup = document.querySelector(".popup");
+                    popup.remove();
+                }
+            });
+        </script>
+                        {{/each}}
+
+    </body>
+</html>

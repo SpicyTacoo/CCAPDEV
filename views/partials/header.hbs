@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+            margin: 0;
+            padding-top: 50px;
+            font-family: 'Mukta', sans-serif;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #1E5631;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .header .button {
+            padding: 5px 10px;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+
+        .header .button:hover {
+            background-color: lightgray;
+        }
+
+        .header .buttonlog {
+            padding: 5px 10px;
+            color: #d21404;
+            border: none;
+            cursor: pointer;
+        }
+
+        .header .buttonlog:hover {
+            background-color: darksalmon;
+        }
+
+        .search-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 35px;
+            width: 420px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+
+        .search-bar input[type="text"] {
+            flex: 1;
+            border: none;
+            padding: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            outline: none;
+            width: 100%;
+        }
+
+        .profpic {
+            display: flex; 
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            margin-right: 20px;
+        }
+
+        #logopic {
+            width: 45px;
+            height: 45px;
+        }
+
+        #commentpic {
+            width: 20px;
+            height: 20px;
+        }
+
+        .search-bar input[type="text"]:hover {
+            background-color: #D3D3D3;
+        }
+
+        .search-bar input[type="text"] {
+            flex: 1;
+            border: none;
+            padding: 5px;
+            font-size: 13px;
+            max-width: 400px;
+            margin-top: 5px;
+        }
+
+        .search-bar button {
+            padding: 5px 10px;
+            background-color: #4C9A2A;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #ACDF87;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            align-items: center;
+        }
+
+        #dropdownContent {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            right: 40%;
+        }
+
+        .dropdown:hover #dropdownContent {
+            display: block;
+        }
+
+        .dropdown a {
+            display: block;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .hide {
+            display: none;
+        }
+        
+        .search_bar_label {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #1E5631;
+            background-color: white; 
+            padding: 5px; 
+            width: 400px;
+        }
+
+        #search-result,
+        #search-results-posts,
+        #search-result-establishments,
+        #search-result-posts {
+            list-style-type: none; 
+            padding: 0;
+            margin: 0;
+            background-color: white; 
+        }
+
+        #search-result li,
+        #search-results-posts li,
+        #search-result-establishments li,
+        #search-result-posts li {
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #search-result li:last-child,
+        #search-results-posts li:last-child,
+        #search-result-establishments li:last-child,
+        #search-result-posts li:last-child {
+            border-bottom: none;
+        }
+
+        #search-result li:hover,
+        #search-results-posts li:hover,
+        #search-result-establishments li:hover,
+        #search-result-posts li:hover {
+            background-color: #e0e0e0; 
+        }
+
+        #about:hover {
+            background-color: rgb(0, 39, 0);
+            /* Add any other styles you want to apply when hovering over the div */
+        }
+    </style>
+
+    <body>
+        <header class="header">
+            <a href="/main">
+                <img src="https://drive.google.com/uc?id=1C3XR9Jql2oz_Bi3BWkPhr10gJ38393kQ&export=download" id="logopic" alt="logo">
+            </a>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search Restaurants/Reviews">
+                <div class="search-results">
+                    <div class="search-results-establishments">
+                        <ul id="search-result-establishments"></ul>
+                    </div>
+                    <div class="search-results-posts">
+                        <ul id="search-result-posts"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const searchDelay = 400;
+
+                document.getElementById('search-input').addEventListener('keyup', (event) => {
+                    const searchInput = event.target;
+                    const key = searchInput.value.trim(); 
+
+                    clearTimeout(searchTimeout);
+
+                    searchTimeout = setTimeout(() => {
+                        searchForEstablishment(key);
+                        searchForPost(key);
+                    }, searchDelay);
+                });
+
+                async function updateUserChoices(choices, resultType) {
+                    const searchChoices = document.querySelector(`#search-result-${resultType}`);
+                    searchChoices.style.overflowY = 'auto'; 
+                    searchChoices.style.maxHeight = '300px';
+                    searchChoices.innerHTML = '';
+                    let search_bar_label = document.createElement('div');
+                    search_bar_label.textContent = `Search from ${resultType.charAt(0).toUpperCase() + resultType.slice(1)}`;
+                    search_bar_label.className = "search_bar_label";
+                    search_bar_label.style.position = "sticky";
+                    search_bar_label.style.top = "0px";
+                    search_bar_label.style.backgroundColor = "#ffffff";
+
+                    searchChoices.appendChild(search_bar_label);
+
+                    choices.forEach(choice => {
+                        let li = document.createElement('li');
+                        if (resultType === 'establishments') {
+                            li.textContent = choice.restaurant;
+                            li.onclick = () => {
+                                window.location.href = `/trial/${encodeURIComponent(choice.restaurant)}`;
+                            };
+                        } else if (resultType === 'posts') {
+                            li.textContent = choice.post;
+                            li.onclick = () => {
+                                window.location.href = `/trial/${encodeURIComponent(choice.post)}/post`;
+                            };
+                        }
+                        searchChoices.appendChild(li);
+                    });
+                }
+
+                let isSearchResultDisplayed = false;
+                let searchTimeout;
+
+                async function searchForEstablishment(key) {
+                    try {
+                        clearTimeout(searchTimeout); 
+
+                        const searchChoices = document.querySelector('#search-result-establishments');
+                        if (key.trim() === '') {
+                            searchChoices.innerHTML = '';
+                            isSearchResultDisplayed = false;
+                            return;
+                        }
+
+                        const response = await fetch(`/searchrestaurant/${key}`);
+                        const data = await response.json();
+
+                        if (data.length > 0) {
+                            updateUserChoices(data, 'establishments');
+                            isSearchResultDisplayed = true;
+                        } else {
+                            searchChoices.innerHTML = '';
+                            isSearchResultDisplayed = false;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+
+                async function searchForPost(key) {
+                    try {
+                        clearTimeout(searchTimeout); 
+
+                        const searchChoices = document.querySelector('#search-result-posts');
+                        
+                        if (key.trim() === '') {
+                            searchChoices.innerHTML = '';
+                            isSearchResultDisplayed = false;
+                            return;
+                        }
+
+                        const response = await fetch(`/searchpost/${key}`);
+                        const data = await response.json();
+
+                        if (data.length > 0) {
+                            updateUserChoices(data, 'posts');
+                            isSearchResultDisplayed = true;
+                        } else {
+                            searchChoices.innerHTML = '';
+                            isSearchResultDisplayed = false;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            </script>
+
+            <div id="about" style="height: 50px; display: flex; align-items: center; justify-content: center; margin:10px">
+                <p style="color: white; padding: 10px; cursor: pointer;" onclick="redirectToAbout()">About Us</p>
+            </div>
+            
+            <div class="dropdown">
+                {{#if isLoggedIn}}
+                    <img src="{{pic}}" style="border-radius: 50%;" id="dropdownButton" class="profpic" alt="profile picture" onclick="toggleDropdown()">
+                {{else}}
+                    <img src="https://drive.google.com/uc?id=1f_uLo1o-BmrshBvgffwPJpIjWpDF5aUt&export=download" id="dropdownButton" class="profpic" alt="profile picture" onclick="toggleDropdown()">
+                {{/if}}
+                <div id="dropdownContent">
+                    {{#if isLoggedIn}}
+                        <a href="/view%20profile/{{username}}" class="button">View User Profile</a>
+                        <a href="/view%20profile/edit%20profile/{{username}}" class="button">Edit User Profile</a>
+                        <a class="buttonlog" onclick="redirectToLogin()">Logout</a>
+                    {{else}}
+                        <a onclick="redirectToRegister()" class="button">Register</a>
+                        <a onclick="redirectToLogin()" class="button">Login</a>
+
+                    {{/if}}
+                    <script>
+                        function redirectToRegister() {
+                        window.location.href = "/register";
+                        }
+
+                        function redirectToLogin() {
+                        window.location.href = "/login";
+                        }
+                        
+                        function redirectToAbout() {
+                        window.location.href = "/aboutpage";
+                        }
+
+                        /*function redirectToLogin() {
+                            fetch('/logout', {
+                                method: 'GET'
+                            })
+                            .then(response => {
+                                // If the response status is 200, it means the logout was successful
+                                if (response.status === 200) {
+                                window.location.href = "/login"; // Redirect to the login page
+                                } else {
+                                // Handle error or show a message that the logout was not successful
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error occurred:', error);
+                                // Handle error or show a message that the logout was not successful
+                            });
+                        }*/
+
+
+                        
+
+
+
+                    </script>
+                </div>
+            </div>
+        </header>
+    </body>
+</html>
