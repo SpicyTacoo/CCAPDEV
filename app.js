@@ -865,7 +865,7 @@ app.get("/confirmEDITCOMMENT/:key/:id", async(req, res)=> {
     // console.log(postOwner);
     const estab = postOwner.parentPostContent;
 
-    res.render("confirmEDITCOMMENT", { key: key, postOwner, postId, estab });
+    res.render("confirmEDITcomment", { key: key, postOwner, postId, estab });
 })
 
 app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
