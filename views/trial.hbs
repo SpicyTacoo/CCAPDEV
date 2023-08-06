@@ -242,7 +242,7 @@
                         const postContent = origpostContent.replace(/\s*\(Edited\)\s*$/, '');
                         const commentId = commentElement.getAttribute('data-comment-id');
 
-                        editComment(commentElement, postContent, commentId);
+                        editComment(commentElement, postContent.trim(), commentId);
                     });
                 });
 

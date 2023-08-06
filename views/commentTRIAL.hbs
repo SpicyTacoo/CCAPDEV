@@ -278,7 +278,7 @@
                         const postContent = origpostContent.replace(/\s*\(Edited\)\s*$/, '');
                         const commentId = commentElement.getAttribute('ids');
                        // Call the deleteComment function and pass the post content as an argument
-                        editComment(commentElement, postContent, commentId);
+                        editComment(commentElement, postContent.trim(), commentId);
                     });
                 });
 
