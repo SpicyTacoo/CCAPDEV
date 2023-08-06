@@ -255,7 +255,7 @@
                         const postContent = origpostContent.replace(/\s*\(Edited\)\s*$/, '');
                         const commentId = commentElement.getAttribute('data-comment-id');
 
-                        deleteComment(commentElement, postContent, commentId);
+                        deleteComment(commentElement, postContent.trim(), commentId);
                     });
                 });
 

@@ -70,7 +70,7 @@
                 <div class="user-details">
                     <p>Edit the post directly in the textbox</p>
                     <div class="input resizable-textarea">
-                        <textarea id="myTextarea" placeholder="Type your text here...">{{key}}</textarea>
+                        <textarea id="myTextarea">{{key}}</textarea>
                     </div>
 
                     <div class="input">
@@ -82,7 +82,7 @@
                     <input type="submit" value="Confirm Edit">
                 </div>
 
-                <div class="cancel-button" onclick="window.location.href='/trial/{{postOwner.restaurant}}'">
+                <div class="cancel-button" onclick="window.location.href='/trial/{{estab}}'">
                     <a>Cancel</a>
                 </div>
 

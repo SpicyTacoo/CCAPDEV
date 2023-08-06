@@ -292,7 +292,7 @@
                         const commentId = commentElement.getAttribute('ids');
 
                         // Call the deleteComment function and pass the post content as an argument
-                        deleteComment(commentElement, postContent, commentId);
+                        deleteComment(commentElement, postContent.trim(), commentId);
                     });
                 });
 
@@ -508,10 +508,8 @@
                     body: JSON.stringify(formData),
                 });
 
-                location.reload();
+                location.reload(); //to add
 
-                //alert('Reply added successfully!');
-                // You can redirect the user to another page or perform other actions after successful submission
                 } catch (error) {
                     console.error('Error adding reply:', error);
                     alert('Failed to add reply. Please try again.');
