@@ -84,6 +84,10 @@ form .submit-button {
     margin: 45px 0;
 }
 
+form .back-button {
+  height: 45px;
+}
+
 form .submit-button input {
     height: 100%;
     width: 100%;
@@ -97,9 +101,27 @@ form .submit-button input {
     background: linear-gradient(135deg, #ACDF87, #1E5631);
 }
 
+form .back-button input{
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ACDF87, #1E5631);
+}
+
 form .submit-button input:hover{
     filter: brightness(80%);
     cursor: pointer;
+}
+
+form .back-button input:hover{
+  filter: brightness(80%);
+  cursor: pointer;
 }
 
 .user-details .input input[type="file"]{
@@ -316,7 +338,11 @@ input[type=submit]:disabled {
 }
 
 .edit-profile-container form .submit-button {
-    margin: 15px 0 40px 0;
+    margin: 15px 0 25px 0;
+}
+
+.edit-profile-container form .back-button {
+  margin: 0 0 40px 0;
 }
 
 
