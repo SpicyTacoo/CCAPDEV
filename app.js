@@ -133,9 +133,9 @@ app.post('/login', async (req, res) => {
     const password = req.body.password;
     // const rememberMe = req.body.remember === 'true';
 
-    console.log("HERE");
-    console.log('Username:', username);
-    console.log('Password:', password);
+    // console.log("HERE");
+    // console.log('Username:', username);
+    // console.log('Password:', password);
     // console.log('Remember Me:', rememberMe);
 
     try {
@@ -195,7 +195,7 @@ app.get("/view%20profile/edit%20profile/:parameter", async (req, res)=> {
 
 
 app.patch("/view%20profile/edit%20profile/edit", async (req, res) => {
-    console.log("HEREE");
+    // console.log("HEREE");
     const db = getDb();
 
     const key = req.body.key;
@@ -223,8 +223,10 @@ app.get("/confirmEDIT/:key/:id", async (req, res)=> {
     const postId = req.params.id
     const collection = db.collection('Reviews');
     const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
+    const estab = postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20");
+
     
-    res.render("confirmEDIT", { key: key, postOwner, postId });
+    res.render("confirmEDIT", { key: key, postOwner, postId, estab });
 })
 
 // post deletion
@@ -232,7 +234,7 @@ app.post('/confirm-deletion/:key/:id', async (req, res) => {
     const key = req.params.key.trim();
     const postId = req.params.id
 
-    console.log(key);
+    // console.log(key);
     const enteredPassword = req.body.password;
 
     const db = getDb();
@@ -282,26 +284,20 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
     let key = req.params.key;
     const editedText = req.params.edited;
     const postId = req.params.id
-    // const collection = db.collection('Reviews');
-    // const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
 
     key = decodeURIComponent(key); 
     key = key.trim(); 
 
-    console.log('Key:', key);
-    console.log('Edited Text:', editedText);
-
     const enteredPassword = req.body.password;
+
     const db = getDb();
     const collection = db.collection('User');
     const review = db.collection('Reviews');
 
     try {
-      // Find the review document that matches the post key
         const postOwner = await review.findOne({ post: key, _id: new ObjectId(postId)});
     
         if (!postOwner) {
-            console.log('Post owner not found for key:', key, postId);
             res.send('Review post not found.', key, postId);
             return;
         }
@@ -309,7 +305,6 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
         const correctPasswordDoc = await collection.findOne({ username: postOwner.username });
     
         if (!correctPasswordDoc) {
-            console.log('Correct password doc not found for post owner:', postOwner.username);
             res.send('User not found.');
             return;
         }
@@ -323,7 +318,6 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
                 const commentsCollection = db.collection('Comments');
 
                 try {
-                    console.log(key);
                     await reviewsCollection.updateOne(
                         { post: key, _id: new ObjectId(postId) }, 
                         { $set: { isEdited: true, post: editedText } }
@@ -338,7 +332,6 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
                     res.status(500).send('Error updating post.');
                 }
             } else {
-                // res.send('Incorrect password. Only the author of the post can edit this.');
                 res.render('errorMessage', {
                     message: "Incorrect password. Only the author of the post can edit this.",
                     restoname: postOwner.restaurant 
@@ -543,12 +536,12 @@ app.get("/trial/:restaurant", async (req, res) => {
         //     }
         // }]).toArray();
 
-        filteredResultNEITHER.forEach((review) => {
-            console.log(review); 
-            review.pic.forEach((picObject) => {
-                console.log(picObject);
-            });
-        });
+        // filteredResultNEITHER.forEach((review) => {
+        //     console.log(review); 
+        //     review.pic.forEach((picObject) => {
+        //         console.log(picObject);
+        //     });
+        // });
 
         const dataToRender = {
             restaurantData: restaurantData,
@@ -570,20 +563,12 @@ app.get("/trial/:restaurant", async (req, res) => {
 app.get("/confirmDELETE/:key/:id", async (req, res)=> {
     const key = req.params.key;
     const db = getDb();
-    const collection = db.collection('Reviews');
     const postId = req.params.id
+    const collection = db.collection('Reviews');
     const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
-    // console.log(req.session.user._id);
-    // console.log(postOwner.user);
-    // if (req.session.user._id != postOwner.user) {
-    //     // res.redirect("/trial/" + postOwner.restaurant);
-    //     res.render('errorMessage', {
-    //         message: "Only the author of the comment can delete this.",
-    //         restoname: postOwner.restaurant 
-    //     });
-    // }else{
-        res.render("confirmDELETE", { key: key, postOwner, postId});
-    // }
+    const estab = postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20");
+    
+    res.render("confirmDELETE", { key: key, postOwner, postId, estab });
 })
 
 //like and dislike trial
@@ -673,7 +658,7 @@ app.post('/clear-reactions/:commentId', async (req, res) => {
             _id: new ObjectId(commentId)
         });
     
-        console.log(updatedReviewData);
+        // console.log(updatedReviewData);
         
         res.json({ 
             success: true, 
@@ -773,7 +758,7 @@ app.get("/trial/:post/post", async (req, res) => {
         const commentsCollection = db.collection("Comments");
 
         const { post } = req.params;
-        console.log("Post from params:", post);
+        // console.log("Post from params:", post);
 
         const reviewData = await reviewsCollection.aggregate([
             {
@@ -874,30 +859,22 @@ app.get("/confirmEDITCOMMENT/:key/:id", async(req, res)=> {
     const key = req.params.key;
     const db = getDb();
     const comment = db.collection('Comments');
-    // console.log("here",key)
     const postId = req.params.id
-    // const collection = db.collection('Reviews');
     const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
-    console.log(key,"here",postId)
-    console.log("here",postOwner)
-    res.render("confirmEDITCOMMENT", { key: key, postOwner, postId });
+
+    // console.log(postOwner);
+    const estab = postOwner.parentPostContent;
+
+    res.render("confirmEDITCOMMENT", { key: key, postOwner, postId, estab });
 })
 
 app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
     let key = req.params.key;
     const editedText = req.params.edited;
     const postId = req.params.id
-    // const collection = db.collection('Reviews');
 
-    // const keyTRIM = key.trim();
-    // const postOwner = await comment.findOne({ content: keyTRIM, _id: new ObjectId(postId) });
     key = decodeURIComponent(key); 
     key = key.trim();
-    
-    // console.log('HEREEE:', key);
-    
-    console.log('Key:', key);
-    console.log('Edited Text:', editedText);
     
     const enteredPassword = req.body.password;
     
@@ -909,7 +886,6 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
         const commentOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
     
         if (!commentOwner) {
-            console.log('Comment owner not found for comment:', key);
             res.send('Comment not found.');
             return;
         }
@@ -917,7 +893,6 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
         const correctPasswordDoc = await collection.findOne({ username: commentOwner.author });
     
         if (!correctPasswordDoc) {
-            console.log('Correct password doc not found for comment owner:', commentOwner.author);
             res.send('User not found.');
             return;
         }
@@ -929,7 +904,6 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
             if (isPasswordValid) {
             const commentCollection = db.collection('Comments');
             try {
-                console.log(key);
                 await commentCollection.updateOne(
                 { content: key, _id: new ObjectId(postId) },
                 { $set: { isEdited: true, content: editedText } }
@@ -940,11 +914,10 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
                 res.status(500).send('Error updating post.');
             }
             } else {
-            // res.send('Incorrect password. Only the author of the comment can edit this.');
-            res.render('errorMessage', {
-                message: "Incorrect password. Only the author of the comment can edit this.",
-                restoname: commentOwner.restaurant 
-            });
+                res.render('errorMessage', {
+                    message: "Incorrect password. Only the author of the comment can edit this.",
+                    restoname: commentOwner.restaurant 
+                });
             }
         } catch (error) {
             console.error('Error comparing passwords:', error);
@@ -965,11 +938,12 @@ app.get("/confirmDELETECOMMENT/:key/:id", async(req, res)=> {
     // const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
 
     const comment = db.collection('Comments');
-    console.log(key)
 
     const keyTRIM = key.trim();
     const postOwner = await comment.findOne({ content: keyTRIM , _id: new ObjectId(postId)});
-    res.render("confirmDELETEcomment", { key: key, postOwner, postId });
+    const estab = postOwner.parentPostContent;
+
+    res.render("confirmDELETEcomment", { key: key, postOwner, postId, estab });
 })
 
 
@@ -977,16 +951,14 @@ app.get("/confirmDELETECOMMENT/:key/:id", async(req, res)=> {
 app.post('/confirm-deletion-comment/:key/:id', async (req, res) => {
     const key = req.params.key.trim();
     const postId = req.params.id
-    console.log(key);
-    console.log("DELETING COMMENT...");
     
     const enteredPassword = req.body.password;
     const db = getDb();
     const collection = db.collection('User');
     const comment = db.collection('Comments');
     const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
-        console.log(postOwner);
-const correctPasswordDoc = await collection.findOne({ username: postOwner.author });
+
+    const correctPasswordDoc = await collection.findOne({ username: postOwner.author });
     
     if (!correctPasswordDoc) {
         res.send('User not found.');
@@ -1000,7 +972,6 @@ const correctPasswordDoc = await collection.findOne({ username: postOwner.author
         if (isPasswordValid) {
             const commentCollection = db.collection('Comments');
             try {
-                console.log(key);
                 await commentCollection.updateOne(
                     { content: key, _id: new ObjectId(postId) },
                     { $set: { isDeleted: true } }
@@ -1038,7 +1009,6 @@ app.post('/like-comment-2/:commentId', async (req, res) => {
     });
 
     if (!commentData) {
-        console.log("Reply not found in the database.");
         return res.status(404).json({ error: "Review not found" });
     }else{
         await commentCollection.updateOne(
@@ -1050,7 +1020,6 @@ app.post('/like-comment-2/:commentId', async (req, res) => {
             }
         );
     }
-    console.log(commentData);  
     res.json({ success: true, likeCount: commentData.liked.length, dislikeCount: commentData.disliked.length });
 });
 
@@ -1069,7 +1038,6 @@ app.post('/dislike-comment-2/:commentId', async(req, res) => {
     });
 
     if (!commentData) {
-        console.log("Reply not found in the database.");
         return res.status(404).json({ error: "Review not found" });
     }else{
         await commentCollection.updateOne(
@@ -1081,7 +1049,6 @@ app.post('/dislike-comment-2/:commentId', async(req, res) => {
             }
         );
     }
-    console.log(commentData);  
     res.json({ success: true, likeCount: commentData.liked.length, dislikeCount: commentData.disliked.length });
 });
 
@@ -1099,7 +1066,6 @@ app.post('/clear-reactions-2/:commentId', async (req, res) => {
     });
 
     if (!commentData) {
-        console.log("Reply not found in the database.");
         return res.status(404).json({ error: "Review not found" });
     }else{
         await commentCollection.updateOne(
@@ -1113,9 +1079,7 @@ app.post('/clear-reactions-2/:commentId', async (req, res) => {
         const updatedReviewData = await commentCollection.findOne({
             _id: new ObjectId(commentId)
         });
-    
-        console.log(updatedReviewData);
-        
+            
         res.json({ 
             success: true, 
             likeCount: updatedReviewData.liked.length, 
