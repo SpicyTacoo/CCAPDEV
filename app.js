@@ -301,8 +301,8 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
         const postOwner = await review.findOne({ post: key, _id: new ObjectId(postId)});
     
         if (!postOwner) {
-            console.log('Post owner not found for key:', key);
-            res.send('Review post not found.');
+            console.log('Post owner not found for key:', key, postId);
+            res.send('Review post not found.', key, postId);
             return;
         }
 
@@ -749,7 +749,7 @@ routes.route("/trial/:parameter/post").post(function (req, res) {
     const comments = new Comments({
         commenter: req.body.commenter,
         parentPost: req.body.parentPost,
-        content: req.body.content.trim(),
+        content: req.body.content,
         author: req.body.author,
         isEdited: req.body.isEdited,
         isDeleted: req.body.isDeleted,
@@ -874,13 +874,12 @@ app.get("/confirmEDITCOMMENT/:key/:id", async(req, res)=> {
     const key = req.params.key;
     const db = getDb();
     const comment = db.collection('Comments');
-    console.log(key)
+    // console.log("here",key)
     const postId = req.params.id
     // const collection = db.collection('Reviews');
-
-    const keyTRIM = key.trim();
-    const postOwner = await comment.findOne({ content: keyTRIM, _id: new ObjectId(postId) });
-    // console.log(postOwner)
+    const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
+    console.log(key,"here",postId)
+    console.log("here",postOwner)
     res.render("confirmEDITCOMMENT", { key: key, postOwner, postId });
 })
 
@@ -986,7 +985,8 @@ app.post('/confirm-deletion-comment/:key/:id', async (req, res) => {
     const collection = db.collection('User');
     const comment = db.collection('Comments');
     const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
-    const correctPasswordDoc = await collection.findOne({ username: postOwner.author });
+        console.log(postOwner);
+const correctPasswordDoc = await collection.findOne({ username: postOwner.author });
     
     if (!correctPasswordDoc) {
         res.send('User not found.');
