@@ -18,11 +18,9 @@ function showFileName() {
 
 usernameInput?.addEventListener("keyup", async function (e) {
     e.preventDefault();
-    console.log('new input');
 
     const usernameValue = usernameInput.value;
     const username = usernameValue.replace(/\s/g, "").toLowerCase();
-    console.log(username);
     
     const response = await fetch ('/checkUsername?username='+ username, {
         method: 'GET',
@@ -35,7 +33,6 @@ usernameInput?.addEventListener("keyup", async function (e) {
         errorContainer.style.border = "none"
         submitButton.disabled = false;
     } else {
-        console.log("an error occured");
         usernameInput.style.borderColor = "red";
         // usernameInput.style.color = "red";
         errorContainer.innerHTML = "Username already exist!";
@@ -50,7 +47,6 @@ usernameInput.addEventListener("keypress", async function (e) {
 });
 
 submitButton.addEventListener("click", function (e) {
-    console.log("submit");
 
     const firstName = firstNameInput.value;
     const lastName = lastNameInput.value;
@@ -105,36 +101,30 @@ submitButton.addEventListener("click", function (e) {
     }
 });
 
+$('#review-form').submit(function(){
+    $('input[type=submit]', this).attr('disabled', 'disabled');
+});
 
 [firstNameInput, lastNameInput, usernameInput, passwordInput, imageInput].forEach(function(element) {
     element.addEventListener("click", function(e) {
-        console.log("click")
         errorContainer.innerHTML = "";
         errorContainer.style.border = "none"
     });
 });
 
 firstNameInput.addEventListener("change", function (e) {
-    console.log("click");
-    
     firstNameInput.style.borderColor = null;
 });
 
 lastNameInput.addEventListener("change", function (e) {
-    console.log("click");
-    
     lastNameInput.style.borderColor = null;
 });
 
 passwordInput.addEventListener("change", function (e) {
-    console.log("click");
-    
     passwordInput.style.borderColor = null;
 });
 
 imageInput.addEventListener("change", function (e) {
-    console.log("click");
-    
     imageInput.style.borderColor = null;
 });
 
