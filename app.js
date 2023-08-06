@@ -908,7 +908,7 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
                 { content: key, _id: new ObjectId(postId) },
                 { $set: { isEdited: true, content: editedText } }
                 );
-                res.redirect(`/trial/${commentOwner.restaurant}`);
+                res.redirect(`/trial/${commentOwner.parentPostContent}/post`);
             } catch (error) {
                 console.error('Error updating document:', error);
                 res.status(500).send('Error updating post.');
@@ -976,7 +976,7 @@ app.post('/confirm-deletion-comment/:key/:id', async (req, res) => {
                     { content: key, _id: new ObjectId(postId) },
                     { $set: { isDeleted: true } }
                 );
-                res.redirect(`/trial/${postOwner.restaurant}`);
+                res.redirect(`/trial/${postOwner.parentPostContent}/post`);
             } catch (error) {
                 console.error('Error updating document:', error);
                 res.status(500).send('Error deleting comment.');
