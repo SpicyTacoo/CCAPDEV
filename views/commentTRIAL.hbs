@@ -451,7 +451,7 @@
                 }
 
                 function closePopup() {
-                    document.getElementById("comment-input").value = "";
+                    // document.getElementById("comment-input").value = "";
                     popup.classList.remove("open-popup");
                 }
 
@@ -464,7 +464,8 @@
                 console.log(hi[0].restaurant);
                 const commenterId = "{{userId}}"; 
                 const parentPostId = hi[0]._id;
-                const postText = document.getElementById('comment-input').value;
+                const postText = document.getElementById('comment-input').value.trim();
+                console.log(postText);
                 const username = "{{username}}";
                 const isEdited = false;
                 const isDeleted = false;
@@ -510,7 +511,6 @@
                 
 
                 //alert('Reply added successfully!');
-                window.location.reload();
                 // You can redirect the user to another page or perform other actions after successful submission
                 } catch (error) {
                     console.error('Error adding reply:', error);
