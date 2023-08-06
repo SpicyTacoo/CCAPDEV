@@ -28,7 +28,7 @@
       <h1>Featured Restaurants</h1>
       <div class="feature">
         {{#each resto}}
-        <div class="resto">
+        <div class="resto" data-post="{{restaurant}}">
           <img class="restoimg" src={{logo}}>
           <div class="descrip">
             <div class="starrating" id="rating-{{@index}}">
@@ -67,7 +67,7 @@
     <script>
       // Move the event listener code to the end of the body
       document.addEventListener('DOMContentLoaded', () => {
-        const viewcommentButtons = document.querySelectorAll('.reviewp');
+        const viewcommentButtons = document.querySelectorAll('.resto');
         viewcommentButtons.forEach((button) => {
           button.addEventListener('click', () => {
             const post = button.getAttribute('data-post');
