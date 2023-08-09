@@ -115,6 +115,9 @@ app.get("/aboutpage", (req, res)=> {
 app.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const rememberMe = req.body.rememberMe; 
+
+    // console.log('Remember Me:', rememberMe);
 
     try {
         const db = getDb();
@@ -126,6 +129,15 @@ app.post('/login', async (req, res) => {
             if (passwordMatch) {
                 req.session.isLoggedIn = true;
                 req.session.user = user;
+
+                if (rememberMe) {
+                    req.session.cookie.maxAge = 21 * 24 * 60 * 60 * 1000; // 21 days
+                    // console.log("hello");
+                } else {
+                    req.session.cookie.expires = false; // Session cookie expires when browser is closed
+                    // console.log("hi");
+                }
+
                 console.log('Login successful for user:', user.username);
                 return res.redirect("/main");
             }
@@ -133,11 +145,6 @@ app.post('/login', async (req, res) => {
 
         console.log('Login failed for user:', username);
 
-        res.render('loginError', {
-            message: 'Invalid username or password',
-            showLoginAgain: true,
-            showGuestPage: true
-        });
     } catch (error) {
         console.error('Error during login:', error);
         res.send('An error occurred during login');
@@ -323,6 +330,7 @@ app.use((req, res, next) => {
     res.locals.userId = req.session.user ? req.session.user._id : null;
     res.locals.username = req.session.user ? req.session.user.username : null; 
     res.locals.pic = req.session.user ? req.session.user.profilePicture : null; 
+    res.locals.rememberMe = req.session.cookie.expires !== false; // Returns true if rememberMe is set
 
     next();
 });
