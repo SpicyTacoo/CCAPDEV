@@ -40,7 +40,6 @@
 
             <form action="/login" method="post">
                 <div class="user-details">
-
                     <div class="input">
                         <input type="text" id="username" class="username" name="username" placeholder="Username" required>
                     </div>
@@ -49,11 +48,10 @@
                         <input type="password" id="password" class="password" name="password" placeholder="Password" required>
                     </div>
 
-                </div>
-
-                <div class="remember">
-                    <input type="checkbox" id="remember-me" name="remember" value="true">
-                    <label for="remember-me">Remember me</label>
+                    <div class="remember">
+                        <input type="checkbox" id="rememberMe" name="rememberMe" value="true">
+                        <label for="remember-me">Remember me</label>
+                    </div>
                 </div>
 
                 <div class="submit-button">
@@ -68,35 +66,29 @@
 </body>
 
 <script>
-    // Function to set the "remember me" data for the username
     function setRememberMeData() {
         const rememberCheckbox = document.getElementById("remember-me");
         const usernameInput = document.querySelector(".username");
 
         if (rememberCheckbox.checked) {
-            // Store the username in cookies to remember it across sessions
             const expirationDate = new Date();
-            expirationDate.setDate(expirationDate.getDate() + 21); //3weeks = 21 days
+            expirationDate.setDate(expirationDate.getDate() + 21); 
             document.cookie = `rememberedUsername=${usernameInput.value}; expires=${expirationDate.toUTCString()}`;
 
-            // Store the username in local storage to remember it even after browser restarts
             localStorage.setItem("rememberedUsername", usernameInput.value);
 
             console.log(expirationDate);
         } else {
-            // If the checkbox is not checked, remove the cookie (set expiration to the past)
             document.cookie = "rememberedUsername=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             localStorage.removeItem("rememberedUsername");
         }
     }
 
-    // Load the remembered username from local storage and cookies and populate the input field if available
     function loadRememberedUsername() {
         const rememberedUsernameLocalStorage = localStorage.getItem("rememberedUsername");
         const rememberedUsernameCookie = getCookie("rememberedUsername");
         const usernameInput = document.querySelector(".username");
 
-        // Prefer local storage over cookies if available
         const rememberedUsername = rememberedUsernameLocalStorage || rememberedUsernameCookie;
 
         if (rememberedUsername) {
@@ -104,14 +96,12 @@
         }
     }
 
-    // Utility function to get a cookie value by name
     function getCookie(name) {
         const value = "; " + document.cookie;
         const parts = value.split("; " + name + "=");
         if (parts.length === 2) return parts.pop().split(";").shift();
     }
 
-    // Attach the event listeners
     document.addEventListener("DOMContentLoaded", loadRememberedUsername);
     document.querySelector(".submit-button").addEventListener("click", setRememberMeData);
 </script>
