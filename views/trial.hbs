@@ -102,7 +102,7 @@
                             <button class="dislike-btn active" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
                             <span class="dislike-count" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
                             <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
-                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-postid="{{this._id}}" data-post="{{this.post}}">View Comments</span>
                         </div>
                     </div>
                 </div>
@@ -150,7 +150,7 @@
                             <button class="dislike-btn active" style="color: blue;" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
                             <span class="dislike-count" style="color: blue;" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
                             <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
-                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-postid="{{this._id}}" data-post="{{this.post}}">View Comments</span>
                         </div>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                             <button class="dislike-btn active" id="dislike-btn-{{this._id}}" onclick="dislikeComment('{{this._id}}')">▼</button>
                             <span class="dislike-count" id="dislike-count-{{this._id}}">{{this.disliked.length}}</span>
                             <button class="clear-btn" style="margin-left: 5px;" data-comment-id="{{this._id}}">Clear Reactions</button>
-                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-post="{{this.post}}">View Comments</span>
+                            <span style="float: right; color:black; cursor: pointer;" class="view-comment-button" data-postid="{{this._id}}" data-post="{{this.post}}">View Comments</span>
                         </div>
                     </div>
                 </div>
@@ -208,10 +208,12 @@
                     viewcommentButtons.forEach((button) => {
                         button.addEventListener('click', () => {
                             const post = button.getAttribute('data-post');
+                            const postid = button.getAttribute('data-postid'); 
                             const encodedPost = encodeURIComponent(post);
-                            window.location.href = `/trial/${encodedPost}/post`;
+                            window.location.href = `/trial/${encodedPost}/${postid}/post`; 
                         });
                     });
+
 
                     const clearButtons = document.querySelectorAll('.clear-btn');
                     clearButtons.forEach((clearButton) => {
@@ -224,7 +226,6 @@
 
             {{#if isLoggedIn}}
             <script>
-                // Function to handle the like action for a comment
                 function editComment(commentElement, postContent, commentId) {
                     window.location.href = `/confirmEDIT/${postContent}/${commentId}`;
                 }
@@ -233,7 +234,6 @@
                     window.location.href = `/confirmDELETE/${postContent}/${commentId}`;
                 }
 
-                // Add event listeners to all edit buttons
                 const editButtons = document.querySelectorAll('.edit-button');
                 editButtons.forEach((button) => {
                     const commentElement = button.parentElement.parentElement;
@@ -246,7 +246,6 @@
                     });
                 });
 
-                // Add event listeners to all delete buttons
                 const deleteButtons = document.querySelectorAll('.delete-button');
                 deleteButtons.forEach((button) => {
                     const commentElement = button.parentElement.parentElement;
@@ -262,20 +261,17 @@
                 function likeComment(commentId) {
                     fetch(`/like-comment/${commentId}`, {
                         method: 'POST',
-                        credentials: 'include', // Include cookies for authentication (if required)
+                        credentials: 'include', 
                     })
                     .then((response) => response.json())
                     .then((data) => {
                     if (data.success) {
-                        // Update the like count
                         const likeCountElement = document.getElementById(`like-count-${commentId}`);
                         likeCountElement.textContent = data.likeCount;
-                        // Update the dislike count in case the user unliked the comment
                         const dislikeCountElement = document.getElementById(`dislike-count-${commentId}`);
                         dislikeCountElement.textContent = data.dislikeCount;
                         location.reload();
                     } else {
-                        // Handle the case where the like action failed (e.g., user not logged in)
                         alert('Failed to like the comment. Please try again later.');
                     }
                     })
@@ -284,24 +280,20 @@
                     });
                 }
 
-                // Function to handle the dislike action for a comment
                 function dislikeComment(commentId) {
                     fetch(`/dislike-comment/${commentId}`, {
                         method: 'POST',
-                        credentials: 'include', // Include cookies for authentication (if required)
+                        credentials: 'include',
                     })
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.success) {
-                            // Update the dislike count
                             const dislikeCountElement = document.getElementById(`dislike-count-${commentId}`);
                             dislikeCountElement.textContent = data.dislikeCount;
-                            // Update the like count in case the user undisliked the comment
                             const likeCountElement = document.getElementById(`like-count-${commentId}`);
                             likeCountElement.textContent = data.likeCount;
-                                    location.reload();
+                            location.reload();
                         } else {
-                            // Handle the case where the dislike action failed (e.g., user not logged in)
                             alert('Failed to dislike the comment. Please try again later.');
                         }
                     })
@@ -313,7 +305,7 @@
                 function clear(commentId) {
                     fetch(`/clear-reactions/${commentId}`, {
                         method: 'POST',
-                        credentials: 'include', // Include cookies for authentication (if required)
+                        credentials: 'include', 
                     })
                     .then((response) => response.json())
                     .then((data) => {
@@ -330,7 +322,6 @@
 
                             console.log('Reactions cleared successfully.');
                             location.reload();
-
                         } else {
                             alert('Failed to clear reactions. Please try again later.');
                         }
@@ -417,111 +408,106 @@
                 }
 
                 /** ADDED FOR POSTING REVIEWS */ 
-               document.getElementById('review-form').addEventListener('submit', (event) => {
-    event.preventDefault();
-    let url = "https://script.google.com/macros/s/AKfycbyJ0UTeofsJ0MJYv6a072kdXUQhISAVtJVJWiSoAFDVD0wgxEGcmIUQUlIuOhLnTpHk/exec";
-    let fileInput = document.getElementById("imageInput");
+                document.getElementById('review-form').addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    let url = "https://script.google.com/macros/s/AKfycbyJ0UTeofsJ0MJYv6a072kdXUQhISAVtJVJWiSoAFDVD0wgxEGcmIUQUlIuOhLnTpHk/exec";
+                    let fileInput = document.getElementById("imageInput");
 
-    let responseLink = "";
-    if (fileInput && fileInput.files.length > 0) {
-        let fr = new FileReader();
-        fr.addEventListener('loadend', () => {
-            let res = fr.result;
-            let spt = res.split("base64,")[1];
-            let obj = {
-                base64: spt,
-                type: fileInput.files[0].type,
-                name: fileInput.files[0].name
+                    let responseLink = "";
+                    if (fileInput && fileInput.files.length > 0) {
+                        let fr = new FileReader();
+                        fr.addEventListener('loadend', () => {
+                            let res = fr.result;
+                            let spt = res.split("base64,")[1];
+                            let obj = {
+                                base64: spt,
+                                type: fileInput.files[0].type,
+                                name: fileInput.files[0].name
+                            }
+                            fetch(url, {
+                                method: "POST",
+                                body: JSON.stringify(obj)
+                            })
+                            .then(r => r.text())
+                            .then(link => {
+                                responseLink = link;
+                                addReview(responseLink);
+                            })
+                            .catch(error => console.error("Error:", error));
+                        });
+                        fr.readAsDataURL(fileInput.files[0]);
+                    } else {
+                        addReview(responseLink);
+                    }
+
+                    function addReview(pictureLink) {
+                        const userId = "{{userId}}";
+                        const restoId = "{{restaurantData._id}}";
+                        const postText = document.getElementById('comment-input').value;
+
+                        const reviewRatingText1 = document.getElementById('review-rating-value').textContent;
+                        const reviewRatingText2 = reviewRatingText1.match(/\d+/)[0]; 
+                        const ratings = parseInt(reviewRatingText2, 10); 
+
+                        const encodedRestaurant = "{{restaurantData.restaurant}}";
+                        const restaurant = encodedRestaurant.replace(/&#x27;/g, "'");
+                        const username = "{{username}}";
+
+                        console.log(userId);
+                        console.log(restoId);
+                        console.log(postText);
+                        console.log(ratings);
+                        console.log(pictureLink);
+                        console.log(restaurant);
+                        console.log(username);
+
+                        const formData = {
+                            user: userId,
+                            resto: restoId,
+                            post: postText,
+                            ratings: ratings,
+                            liked: [],
+                            disliked: [],
+                            isDeleted: false,
+                            isEdited: false,
+                            pictures: pictureLink,
+                            restaurant: restaurant,
+                            username: username
+                        };
+
+                        try {
+                            fetch('/trial/:parameter', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(formData),
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to add review');
+                                }
+                                location.reload();
+                            })
+                            .catch(error => {
+                                console.error('Error adding review:', error);
+                                alert('Failed to add review. Please try again.');
+                            });
+                        } catch (error) {
+                            console.error('Error adding review:', error);
+                            alert('Failed to add review. Please try again.');
+                        }
+                    }
+                });
+            </script>
+        </div>
+
+        {{else}}
+        <script>
+            function redirectToLogin() {
+                window.location.href = '/login';
             }
-            fetch(url, {
-                method: "POST",
-                body: JSON.stringify(obj)
-            })
-            .then(r => r.text())
-            .then(link => {
-                responseLink = link;
-                addReview(responseLink);
-            })
-            .catch(error => console.error("Error:", error));
-        });
-        fr.readAsDataURL(fileInput.files[0]);
-    } else {
-        addReview(responseLink);
-    }
-
-    function addReview(pictureLink) {
-        const userId = "{{userId}}";
-        const restoId = "{{restaurantData._id}}";
-        const postText = document.getElementById('comment-input').value;
-
-        const reviewRatingText1 = document.getElementById('review-rating-value').textContent; //get string
-        const reviewRatingText2 = reviewRatingText1.match(/\d+/)[0]; //get num but as string
-        const ratings = parseInt(reviewRatingText2, 10); //convert to num
-
-        const encodedRestaurant = "{{restaurantData.restaurant}}";
-        const restaurant = encodedRestaurant.replace(/&#x27;/g, "'");
-        const username = "{{username}}";
-
-        console.log(userId);
-        console.log(restoId);
-        console.log(postText);
-        console.log(ratings);
-        console.log(pictureLink);
-        console.log(restaurant);
-        console.log(username);
-
-        const formData = {
-            user: userId,
-            resto: restoId,
-            post: postText,
-            ratings: ratings,
-            liked: [],
-            disliked: [],
-            isDeleted: false,
-            isEdited: false,
-            pictures: pictureLink,
-            restaurant: restaurant,
-            username: username
-        };
-
-        try {
-            fetch('/trial/:parameter', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to add review');
-                }
-                location.reload();
-            })
-            .catch(error => {
-                console.error('Error adding review:', error);
-                alert('Failed to add review. Please try again.');
-            });
-        } catch (error) {
-            console.error('Error adding review:', error);
-            alert('Failed to add review. Please try again.');
-        }
-    }
-});
-
-                
-            </script>
-        </div>
-
-            </div>
-            {{else}}
-            <script>
-                function redirectToLogin() {
-                    // Redirect the user to the login page
-                    window.location.href = '/login';
-                }
-            </script>
-            {{/if}}
-        </div>
-   </body>
+        </script>
+        {{/if}}
+    </body>
 </html>
