@@ -182,7 +182,6 @@ app.patch("/view%20profile/edit%20profile/edit", async (req, res) => {
     const links = req.body.pictureLink;
     const userCollection = db.collection('User');
     try {
-        console.log(key);
         await userCollection.updateOne(
             { username: key },
             { $set: { shortDescription: des, profilePicture: links } }
@@ -238,7 +237,8 @@ app.post('/confirm-deletion/:key/:id', async (req, res) => {
         } else {
             res.render('errorMessage', {
                 message: "Incorrect password. Only the author of the post can delete this.",
-                restoname: postOwner.restaurant 
+                restoname: postOwner.restaurant,
+                link: postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20")
             });
         }
     } catch (error) {
@@ -303,7 +303,8 @@ app.post('/confirm-edit/:key/:edited/:id', async (req, res) => {
             } else {
                 res.render('errorMessage', {
                     message: "Incorrect password. Only the author of the post can edit this.",
-                    restoname: postOwner.restaurant 
+                    restoname: postOwner.restaurant,
+                    link: postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20")
                 });
             }
         } catch (error) {
@@ -546,7 +547,7 @@ app.post('/dislike-comment/:commentId', async(req, res) => {
             }
         );
     }
-    console.log(reviewData);  
+    // console.log(reviewData);  
     res.json({ success: true, likeCount: reviewData.liked.length, dislikeCount: reviewData.disliked.length });
 });
 
@@ -781,7 +782,7 @@ app.get("/confirmEDITCOMMENT/:key/:id", async(req, res)=> {
     const postId = req.params.id
     const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
 
-    const estab = postOwner.parentPostContent;
+    const estab = postOwner.parentPostContent.replace(/'/g, "%27").replace(/ /g, "%20");
 
     res.render("confirmEDITcomment", { key: key, postOwner, postId, estab });
 })
@@ -834,7 +835,8 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
             } else {
                 res.render('errorMessage', {
                     message: "Incorrect password. Only the author of the comment can edit this.",
-                    restoname: commentOwner.restaurant 
+                    restoname: commentOwner.restaurant,
+                    link: commentOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20")
                 });
             }
         } catch (error) {
@@ -857,7 +859,7 @@ app.get("/confirmDELETECOMMENT/:key/:id", async(req, res)=> {
 
     const keyTRIM = key.trim();
     const postOwner = await comment.findOne({ content: keyTRIM , _id: new ObjectId(postId)});
-    const estab = postOwner.parentPostContent;
+    const estab = postOwner.parentPostContent.replace(/'/g, "%27").replace(/ /g, "%20");
 
     res.render("confirmDELETEcomment", { key: key, postOwner, postId, estab });
 })
@@ -900,7 +902,8 @@ app.post('/confirm-deletion-comment/:key/:id', async (req, res) => {
         } else {
             res.render('errorMessage', {
                 message: "Incorrect password. Only the author of the comment can delete this.",
-                restoname: postOwner.restaurant 
+                restoname: postOwner.restaurant,
+                link: postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20")
             });
         }
     } catch (error) {
