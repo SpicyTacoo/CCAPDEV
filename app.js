@@ -10,7 +10,6 @@ import bodyParser from "body-parser";
 import session from "express-session"; 
 import { ObjectId } from 'mongodb';
 
-/** ADDED */
 import Reviews from "./model/Reviews.js";
 import Comments from "./model/Comments.js";
 // import Restaurant from "./model/Restaurant.js";
@@ -66,11 +65,7 @@ connectToMongo(() => {
 
 
 app.get("/register", (req, res)=> {
-    // if (req.session.isLoggedIn == true){
-    //     res.redirect("main");
-    // }else{
-        res.render("register");
-    // }
+    res.render("register");
 })
 
 
@@ -98,7 +93,6 @@ app.post("/register", async (req, res)=> {
         }).catch((err)=>{
             console.log(err);
             console.log("username already exist!")
-            //Render error page or render with partial
         });
     } catch (err) {
         console.log("Error");
@@ -108,35 +102,19 @@ app.post("/register", async (req, res)=> {
 
 
 app.get("/login", (req, res)=> {
-    // if (req.session.isLoggedIn == true){
-    //     res.redirect("main");
-    // }else{
     req.session.isLoggedIn = false;
     req.session.user = null;
     res.render("login");
-    // }
 })
 
 app.get("/aboutpage", (req, res)=> {
     res.render("aboutpage");
 })
 
-/*app.get("/logout", (req, res)=> {
-    req.session.isLoggedIn = false;
-    req.session.user = null;
-    res.redirect("login");
-})*/
-
 // login
 app.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    // const rememberMe = req.body.remember === 'true';
-
-    // console.log("HERE");
-    // console.log('Username:', username);
-    // console.log('Password:', password);
-    // console.log('Remember Me:', rememberMe);
 
     try {
         const db = getDb();
@@ -145,11 +123,9 @@ app.post('/login', async (req, res) => {
 
         if (user) {
             const passwordMatch = await bcrypt.compare(password, user.password);
-
             if (passwordMatch) {
                 req.session.isLoggedIn = true;
                 req.session.user = user;
-
                 console.log('Login successful for user:', user.username);
                 return res.redirect("/main");
             }
@@ -169,7 +145,6 @@ app.post('/login', async (req, res) => {
 });
 
 
-
 app.get("/view%20profile/:parameter", async (req, res)=> {
     const userID = await getUserID(req.params.parameter);
     const userInfo = await getUserInfo(req.params.parameter);
@@ -187,17 +162,14 @@ app.get("/view%20profile/:parameter", async (req, res)=> {
 
 app.get("/view%20profile/edit%20profile/:parameter", async (req, res)=> {
     const user = await getUser(req.params.parameter);
-    const serializedprofPic = JSON.stringify(user.profilePicture); // Serialize the object to JSON
+    const serializedprofPic = JSON.stringify(user.profilePicture); 
 
     res.render("editProfile", {user, serializedprofPic});
-
 });
 
 
 app.patch("/view%20profile/edit%20profile/edit", async (req, res) => {
-    // console.log("HEREE");
     const db = getDb();
-
     const key = req.body.key;
     const des = req.body.shortDescription;
     const links = req.body.pictureLink;
@@ -209,8 +181,6 @@ app.patch("/view%20profile/edit%20profile/edit", async (req, res) => {
             { $set: { shortDescription: des, profilePicture: links } }
         );
         res.redirect("main")
-
-        // res.render("/login")
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).send('Error updating user.');
@@ -224,7 +194,6 @@ app.get("/confirmEDIT/:key/:id", async (req, res)=> {
     const collection = db.collection('Reviews');
     const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
     const estab = postOwner.restaurant.replace(/'/g, "%27").replace(/ /g, "%20");
-
     
     res.render("confirmEDIT", { key: key, postOwner, postId, estab });
 })
@@ -233,18 +202,12 @@ app.get("/confirmEDIT/:key/:id", async (req, res)=> {
 app.post('/confirm-deletion/:key/:id', async (req, res) => {
     const key = req.params.key.trim();
     const postId = req.params.id
-
-    // console.log(key);
     const enteredPassword = req.body.password;
 
     const db = getDb();
     const collection = db.collection('User');
     const review = db.collection('Reviews');
 
-    // console.log("HIIIII");
-    // console.log(postId);
-
-    // const postOwner = await review.findOne({ post: key });
     const postOwner = await review.findOne({ post: key, _id: new ObjectId(postId)});
 
     const correctPasswordDoc = await collection.findOne({ username: postOwner.username });
@@ -266,7 +229,6 @@ app.post('/confirm-deletion/:key/:id', async (req, res) => {
             );
             res.redirect(`/trial/${postOwner.restaurant}`);
         } else {
-            // res.send('Incorrect password. Only the author of the post can delete this.');
             res.render('errorMessage', {
                 message: "Incorrect password. Only the author of the post can delete this.",
                 restoname: postOwner.restaurant 
@@ -355,12 +317,12 @@ app.get("/", (req, res) => {
 });
 
 
-// Middleware to set the login status for the header template
+// Middleware
 app.use((req, res, next) => {
     res.locals.isLoggedIn = !!req.session.user;
     res.locals.userId = req.session.user ? req.session.user._id : null;
-    res.locals.username = req.session.user ? req.session.user.username : null; // Assuming the username property exists in the user object
-    res.locals.pic = req.session.user ? req.session.user.profilePicture : null; // Assuming the username property exists in the user object
+    res.locals.username = req.session.user ? req.session.user.username : null; 
+    res.locals.pic = req.session.user ? req.session.user.profilePicture : null; 
 
     next();
 });
@@ -375,7 +337,6 @@ app.get("/main", async (req, res) => {
         const collection = db.collection("Establishments");
         const resto = await collection.find().toArray();
     
-        // Function to calculate the average rating for each restaurant
         async function getAverageRatingForRestaurants() {
             try {
                 const reviewsCollection = db.collection("Reviews");
@@ -386,7 +347,7 @@ app.get("/main", async (req, res) => {
                     {
                         $group: {
                             _id: "$restaurant",
-                            averageRating: { $avg: "$ratings" } // Calculate the average rating
+                            averageRating: { $avg: "$ratings" }
                         }
                     }
                 ];
@@ -405,9 +366,7 @@ app.get("/main", async (req, res) => {
             }
         }
         const averageRatings = await getAverageRatingForRestaurants();
-    
-        // console.log("Final data to render:", resto);
-    
+        
         resto.forEach((restaurant) => {
             const averageRating = averageRatings.get(restaurant.restaurant);
             restaurant.averageRating = averageRating;
@@ -462,7 +421,6 @@ app.get("/trial/:restaurant", async (req, res) => {
             }
         }]).toArray();
         
-        // Filter the data on the client-side
         const filteredResultDISLIKE = await reviewsCollection.aggregate([
         {
             $match: {
@@ -498,51 +456,6 @@ app.get("/trial/:restaurant", async (req, res) => {
                     }
                 }]).toArray();
 
-        // const filteredResultNEITHER = await reviewsCollection.aggregate([
-        //     {
-        //         $match: {
-        //             restaurant: restaurant,
-        //             isDeleted: false,
-        //             liked: { $nin: [req.session.user ? req.session.user._id : null] },
-        //             disliked: { $nin: [req.session.user ? req.session.user._id : null] },
-        //             username: { $in: [req.session.user ? req.session.user.username : null] }
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'User',
-        //             localField: 'username',
-        //             foreignField: 'username',
-        //             as: 'pic'
-        //         }
-        //     }]).toArray();
-        
-        // const filteredResultNEITHERDISABLE = await reviewsCollection.aggregate([
-        // {
-        //     $match: {
-        //         restaurant: restaurant,
-        //         isDeleted: false,
-        //         liked: { $nin: [req.session.user ? req.session.user._id : null] },
-        //         disliked: { $nin: [req.session.user ? req.session.user._id : null] },
-        //         username: { $nin: [req.session.user ? req.session.user.username : null] }
-        //     }
-        // },
-        // {
-        //     $lookup: {
-        //         from: 'User',
-        //         localField: 'username',
-        //         foreignField: 'username',
-        //         as: 'pic'
-        //     }
-        // }]).toArray();
-
-        // filteredResultNEITHER.forEach((review) => {
-        //     console.log(review); 
-        //     review.pic.forEach((picObject) => {
-        //         console.log(picObject);
-        //     });
-        // });
-
         const dataToRender = {
             restaurantData: restaurantData,
             reviewData: reviewData,
@@ -550,9 +463,7 @@ app.get("/trial/:restaurant", async (req, res) => {
             filteredResultLIKE: filteredResultLIKE,
             filteredResultDISLIKE: filteredResultDISLIKE,
             filteredResultNEITHER: filteredResultNEITHER,
-            // filteredResultNEITHERDISABLE:filteredResultNEITHERDISABLE
         };
-        // console.log(dataToRender);
         res.render("trial", dataToRender);
     } catch (error) {
         console.error(error);
@@ -598,7 +509,7 @@ app.post('/like-comment/:commentId', async (req, res) => {
             }
         );
     }
-    console.log(reviewData);  
+    // console.log(reviewData);  
     res.json({ success: true, likeCount: reviewData.liked.length, dislikeCount: reviewData.disliked.length });
 });
 
@@ -653,13 +564,10 @@ app.post('/clear-reactions/:commentId', async (req, res) => {
             }
         );
     
-        // Fetch the updated review data after the update operation
         const updatedReviewData = await reviewsCollection.findOne({
             _id: new ObjectId(commentId)
         });
-    
-        // console.log(updatedReviewData);
-        
+            
         res.json({ 
             success: true, 
             likeCount: updatedReviewData.liked.length, 
@@ -706,7 +614,6 @@ app.get("/searchpost/:key", async (req, res) => {
     }
 });
 
-/* ADDED */
 const routes = express.Router();
 
 
@@ -751,19 +658,20 @@ routes.route("/trial/:parameter/post").post(function (req, res) {
 app.use(routes);
 
 //search comments of post
-app.get("/trial/:post/post", async (req, res) => {
+app.get("/trial/:post/:postid/post", async (req, res) => {
     try {
         const db = getDb();
         const reviewsCollection = db.collection("Reviews");
         const commentsCollection = db.collection("Comments");
 
-        const { post } = req.params;
-        // console.log("Post from params:", post);
+        const post = req.params.post;
+        const id = req.params.postid;
 
         const reviewData = await reviewsCollection.aggregate([
             {
                 $match: {
                     post: post, 
+                    _id: new ObjectId(id)
                 }
             },
             {
@@ -781,14 +689,15 @@ app.get("/trial/:post/post", async (req, res) => {
             return res.status(404).json({ error: "Review not found" });
         }
             
-        const currentUser = req.session.user ? req.session.user.username : null; // Assuming the username property exists in the user object
+        const currentUser = req.session.user ? req.session.user.username : null;
                 
         const filteredResultLIKE = await commentsCollection.aggregate([
             {
                 $match: {
                     parentPostContent: post, 
                     isDeleted: false,
-                    liked: req.session.user ? req.session.user._id : null
+                    liked: req.session.user ? req.session.user._id : null,
+                    parentPost: new ObjectId(id)
                 }
             },
             {
@@ -806,7 +715,8 @@ app.get("/trial/:post/post", async (req, res) => {
                 $match: {
                     parentPostContent: post, 
                     isDeleted: false,
-                    disliked: req.session.user ? req.session.user._id : null
+                    disliked: req.session.user ? req.session.user._id : null,
+                    parentPost: new ObjectId(id)
                 }
             },
             {
@@ -824,6 +734,7 @@ app.get("/trial/:post/post", async (req, res) => {
                 $match: {
                     parentPostContent: post,
                     isDeleted: false,
+                    parentPost: new ObjectId(id),
                     liked: { $nin: [req.session.user ? req.session.user._id : null] },
                     disliked: { $nin: [req.session.user ? req.session.user._id : null] }
                 }
@@ -862,7 +773,6 @@ app.get("/confirmEDITCOMMENT/:key/:id", async(req, res)=> {
     const postId = req.params.id
     const postOwner = await comment.findOne({ content: key, _id: new ObjectId(postId) });
 
-    // console.log(postOwner);
     const estab = postOwner.parentPostContent;
 
     res.render("confirmEDITcomment", { key: key, postOwner, postId, estab });
@@ -908,7 +818,7 @@ app.post('/confirm-edit-comment/:key/:edited/:id', async (req, res) => {
                 { content: key, _id: new ObjectId(postId) },
                 { $set: { isEdited: true, content: editedText } }
                 );
-                res.redirect(`/trial/${commentOwner.parentPostContent}/post`);
+                res.redirect(`/trial/${commentOwner.parentPostContent}/${commentOwner.parentPost}/post`);
             } catch (error) {
                 console.error('Error updating document:', error);
                 res.status(500).send('Error updating post.');
@@ -935,8 +845,6 @@ app.get("/confirmDELETECOMMENT/:key/:id", async(req, res)=> {
     const db = getDb();
 
     const postId = req.params.id
-    // const postOwner = await collection.findOne({ post: key, _id: new ObjectId(postId)});
-
     const comment = db.collection('Comments');
 
     const keyTRIM = key.trim();
@@ -976,13 +884,12 @@ app.post('/confirm-deletion-comment/:key/:id', async (req, res) => {
                     { content: key, _id: new ObjectId(postId) },
                     { $set: { isDeleted: true } }
                 );
-                res.redirect(`/trial/${postOwner.parentPostContent}/post`);
+                res.redirect(`/trial/${postOwner.parentPostContent}/${postOwner.parentPost}/post`);
             } catch (error) {
                 console.error('Error updating document:', error);
                 res.status(500).send('Error deleting comment.');
             }
         } else {
-            // res.send('Incorrect password. Only the author of the comment can delete this.');
             res.render('errorMessage', {
                 message: "Incorrect password. Only the author of the comment can delete this.",
                 restoname: postOwner.restaurant 
@@ -1075,7 +982,6 @@ app.post('/clear-reactions-2/:commentId', async (req, res) => {
             }
         );
     
-        // Fetch the updated review data after the update operation
         const updatedReviewData = await commentCollection.findOne({
             _id: new ObjectId(commentId)
         });
