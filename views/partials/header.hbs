@@ -183,7 +183,6 @@
 
         #about:hover {
             background-color: rgb(0, 39, 0);
-            /* Add any other styles you want to apply when hovering over the div */
         }
     </style>
 
@@ -243,7 +242,7 @@
                         } else if (resultType === 'posts') {
                             li.textContent = choice.post;
                             li.onclick = () => {
-                                window.location.href = `/trial/${encodeURIComponent(choice.post)}/post`;
+                                window.location.href = `/trial/${encodeURIComponent(choice.post)}/${encodeURIComponent(choice._id)}/post`;
                             };
                         }
                         searchChoices.appendChild(li);
@@ -339,30 +338,6 @@
                         function redirectToAbout() {
                         window.location.href = "/aboutpage";
                         }
-
-                        /*function redirectToLogin() {
-                            fetch('/logout', {
-                                method: 'GET'
-                            })
-                            .then(response => {
-                                // If the response status is 200, it means the logout was successful
-                                if (response.status === 200) {
-                                window.location.href = "/login"; // Redirect to the login page
-                                } else {
-                                // Handle error or show a message that the logout was not successful
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error occurred:', error);
-                                // Handle error or show a message that the logout was not successful
-                            });
-                        }*/
-
-
-                        
-
-
-
                     </script>
                 </div>
             </div>
