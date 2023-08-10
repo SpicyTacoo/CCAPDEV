@@ -221,4 +221,36 @@ body {
   text-align: right;
 }
 
+#image-container {
+  display: flex;
+  align-items: center;
+}
 
+#image-container input[type="file"]{
+  display: none;
+  }
+
+#image-container label:hover {
+  cursor: pointer;
+  color: black;
+  font-weight: 600;
+}
+
+.button-container input:hover {
+  cursor: pointer;
+}
+
+#image-container label{
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 5px;
+  color: gray;
+  overflow: hidden;
+  height: 0%;
+}
+
+#image-container label a{
+  margin-left: 3px;
+}

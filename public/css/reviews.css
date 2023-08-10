@@ -132,7 +132,8 @@
     }
 
 .button-container {
-    margin: 20px;
+    margin-bottom: 20px;
+    margin-top: 5px;
     margin-left: auto;
 }
     .button {
