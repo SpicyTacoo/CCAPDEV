@@ -144,7 +144,11 @@ app.post('/login', async (req, res) => {
         }
 
         console.log('Login failed for user:', username);
-
+        res.render('loginError', {
+            message: 'Invalid username or password',
+            showLoginAgain: true,
+            showGuestPage: true
+        });
     } catch (error) {
         console.error('Error during login:', error);
         res.send('An error occurred during login');
@@ -347,9 +351,9 @@ app.get("/main", async (req, res) => {
         const collection = db.collection("Establishments");
         const resto = await collection.find().toArray();
 
-        const userCollection = db.collection("User");
-        const user = await userCollection.findOne({ username: req.session.user.username });
-        res.locals.pic = user.profilePicture;
+        // const userCollection = db.collection("User");
+        // const user = await userCollection.findOne({ username: req.session.user.username });
+        // res.locals.pic = user.profilePicture;
     
         async function getAverageRatingForRestaurants() {
             try {
@@ -401,9 +405,9 @@ app.get("/trial/:restaurant", async (req, res) => {
         const reviewsCollection = db.collection("Reviews");
         const { restaurant } = req.params;
         
-        const userCollection = db.collection("User");
-        const user = await userCollection.findOne({ username: req.session.user.username });
-        res.locals.pic = user.profilePicture;
+        // const userCollection = db.collection("User");
+        // const user = await userCollection.findOne({ username: req.session.user.username });
+        // res.locals.pic = user.profilePicture;
 
         const restaurantData = await restaurantsCollection.findOne({
             restaurant: restaurant
@@ -681,9 +685,9 @@ app.get("/trial/:post/:postid/post", async (req, res) => {
         const reviewsCollection = db.collection("Reviews");
         const commentsCollection = db.collection("Comments");
 
-        const userCollection = db.collection("User");
-        const user = await userCollection.findOne({ username: req.session.user.username });
-        res.locals.pic = user.profilePicture;
+        // const userCollection = db.collection("User");
+        // const user = await userCollection.findOne({ username: req.session.user.username });
+        // res.locals.pic = user.profilePicture;
         
         const post = req.params.post;
         const id = req.params.postid;
