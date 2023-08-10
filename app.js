@@ -331,7 +331,8 @@ app.use((req, res, next) => {
     res.locals.userId = req.session.user ? req.session.user._id : null;
     res.locals.username = req.session.user ? req.session.user.username : null; 
     res.locals.pic = req.session.user ? req.session.user.profilePicture : null; 
-    res.locals.rememberMe = req.session.cookie.expires !== false; // Returns true if rememberMe is set
+    // res.locals.rememberMe = req.session.cookie.expires !== false; // Returns true if rememberMe is set //if tinangal consistent login but if clinose browser hindi na magauto logout
+
 
     next();
 });
@@ -345,6 +346,10 @@ app.get("/main", async (req, res) => {
         const db = getDb();
         const collection = db.collection("Establishments");
         const resto = await collection.find().toArray();
+
+        const userCollection = db.collection("User");
+        const user = await userCollection.findOne({ username: req.session.user.username });
+        res.locals.pic = user.profilePicture;
     
         async function getAverageRatingForRestaurants() {
             try {
@@ -394,9 +399,12 @@ app.get("/trial/:restaurant", async (req, res) => {
         const db = getDb();
         const restaurantsCollection = db.collection("Establishments");
         const reviewsCollection = db.collection("Reviews");
-        const userCollection = db.collection("User");
         const { restaurant } = req.params;
         
+        const userCollection = db.collection("User");
+        const user = await userCollection.findOne({ username: req.session.user.username });
+        res.locals.pic = user.profilePicture;
+
         const restaurantData = await restaurantsCollection.findOne({
             restaurant: restaurant
         });
@@ -673,6 +681,10 @@ app.get("/trial/:post/:postid/post", async (req, res) => {
         const reviewsCollection = db.collection("Reviews");
         const commentsCollection = db.collection("Comments");
 
+        const userCollection = db.collection("User");
+        const user = await userCollection.findOne({ username: req.session.user.username });
+        res.locals.pic = user.profilePicture;
+        
         const post = req.params.post;
         const id = req.params.postid;
 
